@@ -5,8 +5,8 @@ export default function (props: any) {
         <h2>hello</h2>
         {props.children}
       </>
-    );
+    )
   }
 
-  return <>{props.children}</>;
+  return <>{props.children}</>
 }

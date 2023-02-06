@@ -1,9 +1,9 @@
-import { defineConfig } from 'umi';
+import { defineConfig } from 'umi'
 
 export default defineConfig({
   nodeModulesTransform: {
-    type: 'none',
+    type: 'none'
   },
   fastRefresh: {},
-  layout: {},
-});
+  layout: {}
+})

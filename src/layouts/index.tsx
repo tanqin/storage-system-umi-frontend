@@ -1,11 +1,9 @@
-export default function (props: any) {
+import { IRouteComponentProps } from 'umi'
+
+export default function (props: IRouteComponentProps) {
+  console.log(props.location.pathname)
   if (props.location.pathname === '/login') {
-    return (
-      <>
-        <h2>hello</h2>
-        {props.children}
-      </>
-    )
+    return <>{props.children}</>
   }
 
   return <>{props.children}</>

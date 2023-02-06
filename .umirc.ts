@@ -1,6 +1,6 @@
 import { defineConfig } from 'umi'
-
 export default defineConfig({
+  dva: {},
   nodeModulesTransform: {
     type: 'none'
   },
@@ -12,8 +12,15 @@ export default defineConfig({
   },
   routes: [
     {
+      name: '登录页',
       path: '/login',
-      component: '@/pages/login',
+      component: './Login',
+      layout: false
+    },
+    {
+      name: '注册页',
+      path: '/register',
+      component: './Register',
       layout: false
     },
     {

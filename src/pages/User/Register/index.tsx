@@ -295,7 +295,7 @@ const UserRegister: FC = () => {
           >
             <span>注册</span>
           </Button>
-          <Link className={styles.login} to="/login">
+          <Link className={styles.login} to="/user/login">
             <span>已有账户，去登陆？</span>
           </Link>
         </FormItem>

@@ -65,7 +65,7 @@ const LoginForm = () => {
         <Button type="primary" htmlType="submit" className="login-form-button">
           登录
         </Button>
-        <Link to="/register">马上注册！</Link>
+        <Link to="/user/register">马上注册！</Link>
       </Form.Item>
     </Form>
   )

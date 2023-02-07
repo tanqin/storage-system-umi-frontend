@@ -197,7 +197,7 @@ const UserRegister: FC = () => {
           }
           overlayStyle={{ width: 240 }}
           placement="right"
-          visible={visible}
+          open={visible}
         >
           <FormItem
             name="password"
@@ -295,8 +295,8 @@ const UserRegister: FC = () => {
           >
             <span>注册</span>
           </Button>
-          <Link className={styles.login} to="/user/login">
-            <span>使用已有账户登录</span>
+          <Link className={styles.login} to="/login">
+            <span>已有账户，去登陆？</span>
           </Link>
         </FormItem>
       </Form>

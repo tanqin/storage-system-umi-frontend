@@ -3,6 +3,7 @@ import styles from './index.less'
 import { Form, Input, Button, Checkbox } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import type { LoginParams } from './service'
+import { Link } from 'umi'
 
 const LoginForm = () => {
   const onFinish = (values: LoginParams) => {
@@ -18,38 +19,42 @@ const LoginForm = () => {
     >
       <Form.Item
         name="username"
-        rules={[{ required: true, message: 'Please input your Username!' }]}
+        rules={[{ required: true, message: '请输入用户名！' }]}
       >
         <Input
           prefix={<UserOutlined className="site-form-item-icon" />}
-          placeholder="Username"
+          placeholder="用户名: admin"
         />
       </Form.Item>
       <Form.Item
         name="password"
-        rules={[{ required: true, message: 'Please input your Password!' }]}
+        rules={[{ required: true, message: '请输入密码！' }]}
       >
         <Input
           prefix={<LockOutlined className="site-form-item-icon" />}
           type="password"
-          placeholder="Password"
+          placeholder="密码: admin"
         />
       </Form.Item>
       <Form.Item>
         <Form.Item name="remember" valuePropName="checked" noStyle>
-          <Checkbox>Remember me</Checkbox>
+          <Checkbox>记住密码</Checkbox>
         </Form.Item>
 
-        <a className="login-form-forgot" href="">
-          Forgot password
+        <a
+          className="login-form-forgot"
+          href="https://www.baidu.com"
+          target="_blank"
+        >
+          忘记密码
         </a>
       </Form.Item>
 
       <Form.Item>
         <Button type="primary" htmlType="submit" className="login-form-button">
-          Log in
+          登录
         </Button>
-        Or <a href="">register now!</a>
+        <Link to="/register">马上注册！</Link>
       </Form.Item>
     </Form>
   )
@@ -57,7 +62,7 @@ const LoginForm = () => {
 
 export default () => (
   <div className={styles.container}>
-    <div id="components-form-demo-normal-login">
+    <div id="form-login">
       <LoginForm />
     </div>
   </div>

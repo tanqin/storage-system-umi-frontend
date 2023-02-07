@@ -1,15 +1,23 @@
-# umi project
+# 仓库管理系统 umi 版
 
-## Getting Started
+## 使用说明
 
-Install dependencies,
+安装依赖
 
-```bash
-$ yarn
+```sh
+yarn
 ```
 
-Start the dev server,
+启动项目
 
-```bash
-$ yarn start
+```sh
+yarn start
 ```
+
+## 问题汇总
+
+1. 使用约定式路由时，开启 `layout:{}` 后，我希望登录页、注册页以及 404 页面不要出现 layout，必须在 `routes` 中手抄一份路由表，并将这些不希望出现 layout 的页面设置 `layout: false`，由于需要手抄一份完整的 `routes`，则完全体现不出约定式路由的作用了。
+
+2. request 模块无法设置统一的请求 baseUrl。
+
+3. umi 为什么没有出现跨域问题？

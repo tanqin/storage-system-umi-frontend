@@ -1,20 +1,31 @@
 import React from 'react'
 import styles from './index.less'
-import { Form, Input, Button, Checkbox } from 'antd'
+import { Form, Input, Button, Checkbox, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
-import type { LoginParams } from './service'
-import { Link } from 'umi'
+import { loginAPI, LoginParams } from './service'
+import { history, Link } from 'umi'
 
 const LoginForm = () => {
   const onFinish = (values: LoginParams) => {
-    console.log('Received values of form: ', values)
+    loginAPI({ username: values.username, password: values.password }).then(
+      (res) => {
+        if (res.code === 200) {
+          message.success('登录成功！', 1)
+          history.push({
+            pathname: '/'
+          })
+        } else {
+          message.error('用户名或密码错误！', 2)
+        }
+      }
+    )
   }
 
   return (
     <Form
       name="normal_login"
       className="login-form"
-      initialValues={{ remember: true }}
+      initialValues={{ username: 'admin', password: 'admin', remember: true }}
       onFinish={onFinish}
     >
       <Form.Item
@@ -23,7 +34,7 @@ const LoginForm = () => {
       >
         <Input
           prefix={<UserOutlined className="site-form-item-icon" />}
-          placeholder="用户名: admin"
+          placeholder="用户名"
         />
       </Form.Item>
       <Form.Item
@@ -33,7 +44,7 @@ const LoginForm = () => {
         <Input
           prefix={<LockOutlined className="site-form-item-icon" />}
           type="password"
-          placeholder="密码: admin"
+          placeholder="密码"
         />
       </Form.Item>
       <Form.Item>

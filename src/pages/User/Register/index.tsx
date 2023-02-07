@@ -13,8 +13,8 @@ import {
 } from 'antd'
 import type { Store } from 'antd/es/form/interface'
 import { Link, useRequest, history } from 'umi'
-import type { StateType } from './service'
-import { fakeRegister } from './service'
+import type { RegisterParams, ResultType } from './service'
+import { registerAPI } from './service'
 
 import styles from './style.less'
 
@@ -51,7 +51,7 @@ const passwordProgressMap: {
 }
 
 const UserRegister: FC = () => {
-  const [count, setCount]: [number, any] = useState(0)
+  // const [count, setCount]: [number, any] = useState(0)
   const [visible, setVisible]: [boolean, any] = useState(false)
   const [prefix, setPrefix]: [string, any] = useState('86')
   const [popover, setPopover]: [boolean, any] = useState(false)
@@ -66,17 +66,17 @@ const UserRegister: FC = () => {
     [interval]
   )
 
-  const onGetCaptcha = () => {
-    let counts = 59
-    setCount(counts)
-    interval = window.setInterval(() => {
-      counts -= 1
-      setCount(counts)
-      if (counts === 0) {
-        clearInterval(interval)
-      }
-    }, 1000)
-  }
+  // const onGetCaptcha = () => {
+  //   let counts = 59
+  //   setCount(counts)
+  //   interval = window.setInterval(() => {
+  //     counts -= 1
+  //     setCount(counts)
+  //     if (counts === 0) {
+  //       clearInterval(interval)
+  //     }
+  //   }, 1000)
+  // }
 
   const getPasswordStatus = () => {
     const value = form.getFieldValue('password')
@@ -89,22 +89,27 @@ const UserRegister: FC = () => {
     return 'poor'
   }
 
-  const { loading: submitting, run: register } = useRequest<{
-    data: StateType
-  }>(fakeRegister, {
-    manual: true,
-    onSuccess: (data, params) => {
-      if (data.status === 'ok') {
-        message.success('注册成功！')
-        history.push({
-          pathname: '/user/register-result',
-          state: {
-            account: params.email
-          }
-        })
+  const { loading: submitting, run: register } = useRequest<ResultType>(
+    registerAPI,
+    {
+      manual: true,
+      onSuccess: (res, params: RegisterParams[]) => {
+        // debugger
+        if (res.code === 200) {
+          message.success(res.message)
+          history.push({
+            pathname: '/user/login',
+            state: {
+              username: params[0].username,
+              password: params[0].password
+            }
+          })
+        } else {
+          message.error(res.message)
+        }
       }
     }
-  })
+  )
   const onFinish = (values: Store) => {
     register(values)
   }
@@ -160,22 +165,27 @@ const UserRegister: FC = () => {
 
   return (
     <div className={styles.main}>
-      <h3>注册</h3>
-      <Form form={form} name="UserRegister" onFinish={onFinish}>
+      <h2>注册</h2>
+      <Form
+        form={form}
+        name="UserRegister"
+        initialValues={{
+          password: '123456',
+          confirm: '123456',
+          phone: '13111111111'
+        }}
+        onFinish={onFinish}
+      >
         <FormItem
-          name="mail"
+          name="username"
           rules={[
             {
               required: true,
-              message: '请输入邮箱地址!'
-            },
-            {
-              type: 'email',
-              message: '邮箱地址格式错误!'
+              message: '请输入用户名!'
             }
           ]}
         >
-          <Input size="large" placeholder="邮箱" />
+          <Input size="large" placeholder="用户名" />
         </FormItem>
         <Popover
           getPopupContainer={(node) => {
@@ -245,12 +255,8 @@ const UserRegister: FC = () => {
           </Select>
           <FormItem
             style={{ width: '80%' }}
-            name="mobile"
+            name="phone"
             rules={[
-              {
-                required: true,
-                message: '请输入手机号!'
-              },
               {
                 pattern: /^\d{11}$/,
                 message: '手机号格式错误!'
@@ -260,7 +266,7 @@ const UserRegister: FC = () => {
             <Input size="large" placeholder="手机号" />
           </FormItem>
         </InputGroup>
-        <Row gutter={8}>
+        {/* <Row gutter={8}>
           <Col span={16}>
             <FormItem
               name="captcha"
@@ -284,7 +290,7 @@ const UserRegister: FC = () => {
               {count ? `${count} s` : '获取验证码'}
             </Button>
           </Col>
-        </Row>
+        </Row> */}
         <FormItem>
           <Button
             size="large"

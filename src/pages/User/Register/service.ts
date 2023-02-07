@@ -1,21 +1,22 @@
 import { request } from 'umi'
 
-export interface StateType {
-  status?: 'ok' | 'error'
-  currentAuthority?: 'user' | 'guest' | 'admin'
+export interface ResultType {
+  code: number
+  message: string
+  total?: number | null
+  data?: object | null
 }
 
 export interface RegisterParams {
-  mail: string
+  username: string
   password: string
-  confirm: string
-  mobile: string
-  captcha: string
-  prefix: string
+  phone?: string
 }
 
-export async function fakeRegister(params: RegisterParams) {
-  return request('/api/register', {
+const baseURL = 'http://localhost:8080'
+
+export async function registerAPI(params: RegisterParams) {
+  return request(baseURL + '/user/register', {
     method: 'POST',
     data: params
   })

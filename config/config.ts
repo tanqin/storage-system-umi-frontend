@@ -11,5 +11,8 @@ export default defineConfig({
     logo: 'logo.png',
     locale: true
   },
-  routes
+  routes,
+  request: {
+    dataField: ''
+  }
 })

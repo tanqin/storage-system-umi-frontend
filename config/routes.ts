@@ -14,6 +14,7 @@ export default [
   {
     name: '用户',
     path: '/user',
+    icon: 'smile',
     layout: false,
     routes: [
       {

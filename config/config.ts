@@ -7,9 +7,12 @@ export default defineConfig({
   },
   fastRefresh: {},
   layout: {
-    name: '仓库管理系统',
+    // 所有配置项：https://procomponents.ant.design/components/layout#prolayout
+    title: '仓库管理系统',
     logo: 'logo.png',
-    locale: true
+    locale: 'zh-CN',
+    contentStyle: { padding: '20px' }, // layout 的内容区 style
+    siderWidth: 190
   },
   routes,
   request: {

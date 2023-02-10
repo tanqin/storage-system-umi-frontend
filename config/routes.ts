@@ -35,6 +35,12 @@ export default [
     component: '@/pages'
   },
   {
+    name: '管理员管理',
+    path: '/admin',
+    icon: 'smile',
+    component: '@/pages/Admin'
+  },
+  {
     path: '/',
     redirect: '/index'
   },

@@ -12,7 +12,7 @@ export default defineConfig({
     logo: 'logo.png',
     locale: 'zh-CN',
     contentStyle: { padding: '20px' }, // layout 的内容区 style
-    siderWidth: 190
+    siderWidth: 194
   },
   routes,
   request: {

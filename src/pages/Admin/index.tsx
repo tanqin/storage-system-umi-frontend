@@ -30,14 +30,15 @@ export default function Admin() {
   const [searchParams, setSearchParams] = useState<SearchParams | undefined>(
     undefined
   )
-
-  const getUserList = async () => {
+  const [total, setTotal] = useState(0)
+  const getUserList = async (pageNum: number = 1, pageSize: number = 10) => {
     const res = await getUserListAPI({
-      pageNum: 1,
-      pageSize: 10,
+      pageNum,
+      pageSize,
       params: searchParams
     })
     setUserList(res.data || [])
+    setTotal(res.total)
   }
 
   useEffect(() => {
@@ -189,6 +190,15 @@ export default function Admin() {
     setIsAddOrEditModalOpen(false)
   }
 
+  const handleClosed = () => {
+    addOrEditUserForm.resetFields()
+  }
+
+  // 分页
+  const onChange = (pageNum: number, pageSize: number) => {
+    getUserList(pageNum, pageSize)
+  }
+
   return (
     <div className={styles.admin}>
       <div className="search-bar">
@@ -228,10 +238,11 @@ export default function Admin() {
               <Button onClick={handleReset}>重置</Button>
               <Button onClick={() => showAddOrEditModal()}>新增</Button>
               <Modal
-                title="新增用户"
+                title={type.current === 'add' ? '新增用户' : '编辑用户'}
                 open={isAddOrEditModalOpen}
                 onOk={handleAddOrEditOk}
                 onCancel={handleAddCancel}
+                afterClose={handleClosed}
               >
                 <Form
                   form={addOrEditUserForm}
@@ -241,7 +252,9 @@ export default function Admin() {
                   autoComplete="off"
                   initialValues={{ sex: 2 }}
                 >
-                  <Form.Item name="id" hidden></Form.Item>
+                  <Form.Item name="id" hidden>
+                    <Input />
+                  </Form.Item>
                   <Form.Item
                     label="用户名"
                     name="username"
@@ -322,7 +335,21 @@ export default function Admin() {
         </Form>
       </div>
 
-      <Table columns={columns} dataSource={data} rowKey="id" />
+      <Table
+        columns={columns}
+        dataSource={data}
+        rowKey="id"
+        scroll={{ y: 660 }}
+        pagination={{
+          showSizeChanger: true,
+          showQuickJumper: true,
+          total: total,
+          showTotal: (total) => `总 ${total} 条`,
+          defaultPageSize: 10,
+          defaultCurrent: 1,
+          onChange: onChange
+        }}
+      />
     </div>
   )
 }

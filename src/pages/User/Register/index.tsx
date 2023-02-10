@@ -13,10 +13,11 @@ import {
 } from 'antd'
 import type { Store } from 'antd/es/form/interface'
 import { Link, useRequest, history } from 'umi'
-import type { RegisterParams, ResultType } from './service'
+import type { ResultType } from './service'
 import { registerAPI } from './service'
 
 import styles from './style.less'
+import { User } from '@/pages/Admin/service'
 
 const FormItem = Form.Item
 const { Option } = Select
@@ -51,10 +52,10 @@ const passwordProgressMap: {
 }
 
 const UserRegister: FC = () => {
-  // const [count, setCount]: [number, any] = useState(0)
-  const [visible, setVisible]: [boolean, any] = useState(false)
-  const [prefix, setPrefix]: [string, any] = useState('86')
-  const [popover, setPopover]: [boolean, any] = useState(false)
+  // const [count, setCount]= useState(0)
+  const [visible, setVisible] = useState(false)
+  const [prefix, setPrefix] = useState('86')
+  const [popover, setPopover] = useState(false)
   const confirmDirty = false
   let interval: number | undefined
   const [form] = Form.useForm()
@@ -93,7 +94,7 @@ const UserRegister: FC = () => {
     registerAPI,
     {
       manual: true,
-      onSuccess: (res, params: RegisterParams[]) => {
+      onSuccess: (res, params: User[]) => {
         // debugger
         if (res.code === 200) {
           message.success(res.message)

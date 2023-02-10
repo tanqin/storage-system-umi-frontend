@@ -21,3 +21,5 @@ yarn start
 2. request 模块无法设置统一的请求 baseUrl。
 
 3. umi 为什么没有出现跨域问题？
+
+4. 每个路由需要单独指定高阶组件 wrappers，不能统一拦截吗？

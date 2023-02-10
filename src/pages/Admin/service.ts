@@ -13,6 +13,7 @@ export interface PageQueryParams {
 export interface User {
   id: number
   username: string
+  password?: string
   nickname: string
   age: number
   sex: number | null | undefined

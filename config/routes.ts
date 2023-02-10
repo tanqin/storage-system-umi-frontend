@@ -33,13 +33,15 @@ export default [
     name: '首页',
     path: '/index',
     icon: 'smile',
-    component: '@/pages'
+    component: '@/pages',
+    wrappers: ['@/wrappers/auth']
   },
   {
     name: '管理员管理',
     path: '/admin',
     icon: 'smile',
-    component: '@/pages/Admin'
+    component: '@/pages/Admin',
+    wrappers: ['@/wrappers/auth']
   },
   {
     path: '/',

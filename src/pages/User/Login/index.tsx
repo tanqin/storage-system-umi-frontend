@@ -2,14 +2,17 @@ import styles from './index.less'
 import { Form, Input, Button, Checkbox, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { loginAPI, LoginParams } from './service'
-import { history, Link } from 'umi'
+import { history, Link, Location } from 'umi'
+import { setToken } from '@/utils/auth'
+import { ReactNode } from 'react'
 
 const LoginForm = ({ state }: any) => {
   // debugger
   const onFinish = (values: LoginParams) => {
     loginAPI({ username: values.username, password: values.password }).then(
       (res) => {
-        if (res.code === 200) {
+        if (res.code === 200 && res.data?.token) {
+          setToken(res.data.token)
           message.success('登录成功！', 1)
           history.push({
             pathname: '/'
@@ -75,7 +78,12 @@ const LoginForm = ({ state }: any) => {
   )
 }
 
-export default function Login({ location }: any) {
+export type PropsType = {
+  location: Location
+  children?: ReactNode
+}
+
+export default function Login({ location }: PropsType) {
   // debugger
   return (
     <div className={styles['login-container']}>

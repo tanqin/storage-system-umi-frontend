@@ -1,4 +1,4 @@
-import { SearchOutlined } from '@ant-design/icons'
+import { ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons'
 import {
   Button,
   Form,
@@ -14,8 +14,9 @@ import {
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useEffect, useRef, useState } from 'react'
-import { registerAPI } from '../User/Register/service'
-import { editUserAPI, getUserListAPI, User } from './service'
+import { registerAPI, ResultType } from '../User/Register/service'
+import { deleteUserAPI, editUserAPI, getUserListAPI, User } from './service'
+import styles from './index.less'
 
 export default function Admin() {
   const [form] = Form.useForm()
@@ -60,6 +61,22 @@ export default function Admin() {
   const handleReset = () => {
     setSearchParams(undefined)
     form.setFieldsValue({ queryString: undefined, sex: undefined })
+  }
+
+  // 删除用户
+  const onDeleteUser = (id: number) => {
+    Modal.confirm({
+      title: '删除提示',
+      icon: <ExclamationCircleOutlined />,
+      content: '您确认删除该用户吗？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: async () => {
+        const res = await deleteUserAPI<ResultType>(id)
+        message[res.code === 200 ? 'success' : 'error'](res.message)
+        getUserList()
+      }
+    })
   }
 
   const columns: ColumnsType<User> = [
@@ -127,7 +144,7 @@ export default function Admin() {
           <Button type="primary" onClick={() => showAddOrEditModal(row)}>
             编辑
           </Button>
-          <Button danger type="primary">
+          <Button danger type="primary" onClick={() => onDeleteUser(row.id)}>
             删除
           </Button>
         </Space>
@@ -173,7 +190,7 @@ export default function Admin() {
   }
 
   return (
-    <div>
+    <div className={styles.admin}>
       <div className="search-bar">
         <Form form={form} layout="inline" onFinish={onSearch}>
           <Form.Item name="queryString">

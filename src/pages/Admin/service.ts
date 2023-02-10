@@ -35,3 +35,9 @@ export async function editUserAPI(user: User) {
     data: user
   })
 }
+
+export async function deleteUserAPI<R>(id: number) {
+  return request<R>(baseURL + `/user/delete/${id}`, {
+    method: 'DELETE'
+  })
+}

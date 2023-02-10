@@ -1,3 +1,4 @@
+import { User } from '@/pages/Admin/service'
 import { request } from 'umi'
 
 export interface ResultType {
@@ -7,18 +8,9 @@ export interface ResultType {
   data?: object | null
 }
 
-export interface RegisterParams {
-  username: string
-  password: string
-  nickname?: string
-  age?: number
-  sex?: number
-  phone?: string
-}
-
 const baseURL = 'http://localhost:8080'
 
-export async function registerAPI(params: RegisterParams) {
+export async function registerAPI(params: User) {
   return request(baseURL + '/user/register', {
     method: 'POST',
     data: params

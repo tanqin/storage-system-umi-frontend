@@ -14,8 +14,8 @@ import {
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useEffect, useRef, useState } from 'react'
-import { registerAPI, RegisterParams } from '../User/Register/service'
-import { getUserListAPI, User } from './service'
+import { registerAPI } from '../User/Register/service'
+import { editUserAPI, getUserListAPI, User } from './service'
 
 export default function Admin() {
   const [form] = Form.useForm()
@@ -29,7 +29,6 @@ export default function Admin() {
   const [searchParams, setSearchParams] = useState<SearchParams | undefined>(
     undefined
   )
-  const searchParamsRef = useRef<SearchParams>()
 
   const getUserList = async () => {
     const res = await getUserListAPI({
@@ -63,17 +62,7 @@ export default function Admin() {
     form.setFieldsValue({ queryString: undefined, sex: undefined })
   }
 
-  interface DataType {
-    id: number
-    username: string
-    nickname: string
-    age: number
-    sex: number | null | undefined
-    phone: string
-    roleId: number
-  }
-
-  const columns: ColumnsType<DataType> = [
+  const columns: ColumnsType<User> = [
     {
       title: 'ID',
       dataIndex: 'id',
@@ -135,7 +124,9 @@ export default function Admin() {
       dataIndex: 'operation',
       render: (_, row) => (
         <Space>
-          <Button type="primary">编辑</Button>
+          <Button type="primary" onClick={() => showAddOrEditModal(row)}>
+            编辑
+          </Button>
           <Button danger type="primary">
             删除
           </Button>
@@ -145,24 +136,32 @@ export default function Admin() {
     }
   ]
 
-  const data: DataType[] = userList
+  const data: User[] = userList
 
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-  // 新增用户模态框
-  const showAddModal = () => {
-    setIsAddModalOpen(true)
+  const [addOrEditUserForm] = Form.useForm<User>()
+  const [isAddOrEditModalOpen, setIsAddOrEditModalOpen] = useState(false)
+  const type = useRef('add')
+
+  // 新增或编辑用户模态框
+  const showAddOrEditModal = (row?: User) => {
+    type.current = 'add'
+    if (row) {
+      type.current = 'edit'
+      addOrEditUserForm.setFieldsValue(row)
+    }
+    setIsAddOrEditModalOpen(true)
   }
 
-  const [addUserForm] = Form.useForm<RegisterParams>()
-
-  const handleAddOk = async () => {
-    // console.log(addUserForm.getFieldsValue())
-    // 注册用户
-    const res = await registerAPI(addUserForm.getFieldsValue())
+  const handleAddOrEditOk = async () => {
+    // console.log(addOrEditUserForm.getFieldsValue())
+    const userInfo = addOrEditUserForm.getFieldsValue()
+    const res = await (type.current === 'add'
+      ? registerAPI(userInfo)
+      : editUserAPI(userInfo))
     if (res.code === 200) {
       message.success(res.message, 2)
-      addUserForm.resetFields()
-      setIsAddModalOpen(false)
+      addOrEditUserForm.resetFields()
+      setIsAddOrEditModalOpen(false)
       getUserList()
     } else {
       message.error(res.message)
@@ -170,7 +169,7 @@ export default function Admin() {
   }
 
   const handleAddCancel = () => {
-    setIsAddModalOpen(false)
+    setIsAddOrEditModalOpen(false)
   }
 
   return (
@@ -210,21 +209,22 @@ export default function Admin() {
                 查询
               </Button>
               <Button onClick={handleReset}>重置</Button>
-              <Button onClick={showAddModal}>新增</Button>
+              <Button onClick={() => showAddOrEditModal()}>新增</Button>
               <Modal
                 title="新增用户"
-                open={isAddModalOpen}
-                onOk={handleAddOk}
+                open={isAddOrEditModalOpen}
+                onOk={handleAddOrEditOk}
                 onCancel={handleAddCancel}
               >
                 <Form
-                  form={addUserForm}
+                  form={addOrEditUserForm}
                   labelCol={{ span: 4 }}
                   wrapperCol={{ span: 20 }}
                   // onFinish={onFinish}
                   autoComplete="off"
                   initialValues={{ sex: 2 }}
                 >
+                  <Form.Item name="id" hidden></Form.Item>
                   <Form.Item
                     label="用户名"
                     name="username"

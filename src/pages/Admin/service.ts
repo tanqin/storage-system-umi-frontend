@@ -15,7 +15,7 @@ export interface User {
   username: string
   nickname: string
   age: number
-  sex: number
+  sex: number | null | undefined
   phone: string
   roleId: number
 }
@@ -26,5 +26,12 @@ export async function getUserListAPI(params: PageQueryParams) {
   return request(baseURL + '/user/pageList', {
     method: 'POST',
     data: params
+  })
+}
+
+export async function editUserAPI(user: User) {
+  return request(baseURL + '/user/update', {
+    method: 'PUT',
+    data: user
   })
 }

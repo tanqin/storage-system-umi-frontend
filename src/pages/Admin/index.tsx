@@ -1,7 +1,20 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { Button, Form, Input, Select, Space, Table, Tag } from 'antd'
+import {
+  Button,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Modal,
+  Radio,
+  Select,
+  Space,
+  Table,
+  Tag
+} from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useEffect, useRef, useState } from 'react'
+import { registerAPI, RegisterParams } from '../User/Register/service'
 import { getUserListAPI, User } from './service'
 
 export default function Admin() {
@@ -134,6 +147,32 @@ export default function Admin() {
 
   const data: DataType[] = userList
 
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  // 新增用户模态框
+  const showAddModal = () => {
+    setIsAddModalOpen(true)
+  }
+
+  const [addUserForm] = Form.useForm<RegisterParams>()
+
+  const handleAddOk = async () => {
+    // console.log(addUserForm.getFieldsValue())
+    // 注册用户
+    const res = await registerAPI(addUserForm.getFieldsValue())
+    if (res.code === 200) {
+      message.success(res.message, 2)
+      addUserForm.resetFields()
+      setIsAddModalOpen(false)
+      getUserList()
+    } else {
+      message.error(res.message)
+    }
+  }
+
+  const handleAddCancel = () => {
+    setIsAddModalOpen(false)
+  }
+
   return (
     <div>
       <div className="search-bar">
@@ -171,7 +210,96 @@ export default function Admin() {
                 查询
               </Button>
               <Button onClick={handleReset}>重置</Button>
-              <Button>新增</Button>
+              <Button onClick={showAddModal}>新增</Button>
+              <Modal
+                title="新增用户"
+                open={isAddModalOpen}
+                onOk={handleAddOk}
+                onCancel={handleAddCancel}
+              >
+                <Form
+                  form={addUserForm}
+                  labelCol={{ span: 4 }}
+                  wrapperCol={{ span: 20 }}
+                  // onFinish={onFinish}
+                  autoComplete="off"
+                  initialValues={{ sex: 2 }}
+                >
+                  <Form.Item
+                    label="用户名"
+                    name="username"
+                    rules={[
+                      { required: true, message: '请输入用户名!' },
+                      {
+                        type: 'string',
+                        min: 2,
+                        max: 24,
+                        message: '用户名字符长度需在2-24位之间'
+                      }
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    label="密码"
+                    name="password"
+                    rules={[
+                      { required: true, message: '请输入密码!' },
+                      {
+                        type: 'string',
+                        min: 8,
+                        max: 24,
+                        message: '密码长度需在8-24位之间!'
+                      }
+                    ]}
+                  >
+                    <Input.Password />
+                  </Form.Item>
+                  <Form.Item label="昵称" name="nickname">
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    label="年龄"
+                    name="age"
+                    rules={[
+                      {
+                        required: false,
+                        transform: (value) => {
+                          return value && String(value)
+                        },
+                        pattern: /^(0|[1-9]\d*)$/,
+                        message: '年龄只能为 0 或正整数!'
+                      }
+                    ]}
+                  >
+                    <InputNumber
+                      // precision={0}
+                      min={0}
+                      max={130}
+                      style={{ width: '30%' }}
+                    />
+                  </Form.Item>
+                  <Form.Item label="性别" name="sex">
+                    <Radio.Group>
+                      <Radio value={2}> 未知 </Radio>
+                      <Radio value={0}> 女 </Radio>
+                      <Radio value={1}> 男 </Radio>
+                    </Radio.Group>
+                  </Form.Item>
+                  <Form.Item
+                    label="手机号码"
+                    name="phone"
+                    rules={[
+                      {
+                        pattern: /^1[3-9]\d{9}$/,
+                        message: '手机号格式错误!'
+                      }
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </Form>
+              </Modal>
             </Space>
           </Form.Item>
         </Form>

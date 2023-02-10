@@ -10,6 +10,9 @@ export interface ResultType {
 export interface RegisterParams {
   username: string
   password: string
+  nickname?: string
+  age?: number
+  sex?: number
   phone?: string
 }
 

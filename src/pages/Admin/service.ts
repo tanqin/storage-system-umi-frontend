@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import { ResultType } from '../User/Register/service'
 
 export interface PageQueryParams {
   pageNum?: number
@@ -21,22 +22,22 @@ export interface User {
   roleId: number
 }
 
-export async function getUserListAPI(params: PageQueryParams) {
-  return request('/user/pageList', {
+export async function getUserListAPI<T>(params: PageQueryParams) {
+  return request<ResultType<T>>('/user/pageList', {
     method: 'POST',
     data: params
   })
 }
 
-export async function editUserAPI(user: User) {
-  return request('/user/update', {
+export async function editUserAPI<T>(user: User) {
+  return request<ResultType<T>>('/user/update', {
     method: 'PUT',
     data: user
   })
 }
 
-export async function deleteUserAPI<R>(id: number) {
-  return request<R>(`/user/delete/${id}`, {
+export async function deleteUserAPI<T>(id: number) {
+  return request<ResultType<T>>(`/user/delete/${id}`, {
     method: 'DELETE'
   })
 }

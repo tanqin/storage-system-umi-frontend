@@ -14,7 +14,7 @@ import {
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useEffect, useRef, useState } from 'react'
-import { registerAPI, ResultType } from '../User/Register/service'
+import { registerAPI } from '../User/Register/service'
 import { deleteUserAPI, editUserAPI, getUserListAPI, User } from './service'
 import styles from './index.less'
 
@@ -32,13 +32,13 @@ export default function Admin() {
   )
   const [total, setTotal] = useState(0)
   const getUserList = async (pageNum: number = 1, pageSize: number = 10) => {
-    const res = await getUserListAPI({
+    const res = await getUserListAPI<User[]>({
       pageNum,
       pageSize,
       params: searchParams
     })
     setUserList(res?.data || [])
-    setTotal(res?.total)
+    setTotal(res?.total || 0)
   }
 
   useEffect(() => {
@@ -69,7 +69,7 @@ export default function Admin() {
       okText: '确认',
       cancelText: '取消',
       onOk: async () => {
-        const res = await deleteUserAPI<ResultType>(id)
+        const res = await deleteUserAPI(id)
         message[res.code === 200 ? 'success' : 'error'](res.message)
         getUserList()
       }
@@ -141,7 +141,12 @@ export default function Admin() {
           <Button type="primary" onClick={() => showAddOrEditModal(row)}>
             编辑
           </Button>
-          <Button danger type="primary" onClick={() => onDeleteUser(row.id)}>
+          <Button
+            danger
+            type="primary"
+            disabled={row.roleId === 0}
+            onClick={() => onDeleteUser(row.id)}
+          >
             删除
           </Button>
         </Space>

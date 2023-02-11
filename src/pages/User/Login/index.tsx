@@ -5,23 +5,25 @@ import { loginAPI, LoginParams } from './service'
 import { history, Link, Location } from 'umi'
 import { setToken } from '@/utils/auth'
 import { ReactNode } from 'react'
+import { User } from '@/pages/Admin/service'
 
-const LoginForm = ({ state }: any) => {
+const LoginForm = ({ state }: PropsType<User>) => {
   // debugger
-  const onFinish = (values: LoginParams) => {
-    loginAPI({ username: values.username, password: values.password }).then(
-      (res) => {
-        if (res.code === 200 && res.data?.token) {
-          setToken(res.data.token)
-          message.success('登录成功！', 1)
-          history.push({
-            pathname: '/'
-          })
-        } else {
-          message.error('用户名或密码错误！', 2)
-        }
+  const onLogin = (values: LoginParams) => {
+    loginAPI<{ token: string }>({
+      username: values.username,
+      password: values.password
+    }).then((res) => {
+      if (res.code === 200 && res.data?.token) {
+        setToken(res.data.token)
+        message.success('登录成功！', 1)
+        history.push({
+          pathname: '/'
+        })
+      } else {
+        message.error('用户名或密码错误！', 2)
       }
-    )
+    })
   }
 
   return (
@@ -33,7 +35,7 @@ const LoginForm = ({ state }: any) => {
         password: state?.password || 'admin',
         remember: true
       }}
-      onFinish={onFinish}
+      onFinish={onLogin}
     >
       <Form.Item
         name="username"
@@ -78,9 +80,10 @@ const LoginForm = ({ state }: any) => {
   )
 }
 
-export type PropsType = {
-  location: Location
+export interface PropsType<T = undefined> {
+  location?: Location
   children?: ReactNode
+  state?: T
 }
 
 export default function Login({ location }: PropsType) {
@@ -88,7 +91,7 @@ export default function Login({ location }: PropsType) {
   return (
     <div className={styles['login-container']}>
       <div id="form-login">
-        <LoginForm state={location.state} />
+        <LoginForm state={location!.state as User} />
       </div>
     </div>
   )

@@ -1,6 +1,7 @@
 import { defineConfig } from 'umi'
 import routes from './routes'
 export default defineConfig({
+  favicon: '/favicon.svg',
   dva: {},
   nodeModulesTransform: {
     type: 'none'

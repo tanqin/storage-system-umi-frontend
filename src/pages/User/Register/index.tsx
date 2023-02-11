@@ -79,7 +79,7 @@ const UserRegister: FC = () => {
     return 'poor'
   }
 
-  const { loading: submitting, run: register } = useRequest<ResultType>(
+  const { loading: submitting, run: register } = useRequest<ResultType<null>>(
     registerAPI,
     {
       manual: true,

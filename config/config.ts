@@ -5,6 +5,8 @@ export default defineConfig({
   nodeModulesTransform: {
     type: 'none'
   },
+  // mfsu: {},
+  // webpack5: {},
   fastRefresh: {},
   layout: {
     // 所有配置项：https://procomponents.ant.design/components/layout#prolayout

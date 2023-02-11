@@ -290,7 +290,7 @@ export default function Admin() {
                     rules={[
                       {
                         required: false,
-                        transform: (value) => {
+                        transform: (value: number) => {
                           return value && String(value)
                         },
                         pattern: /^(0|[1-9]\d*)$/,

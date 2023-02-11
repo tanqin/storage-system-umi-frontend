@@ -134,7 +134,7 @@ export default function Admin() {
       dataIndex: 'roleId',
       render: (roleId, row) => (
         <Tag
-          color={roleId === 2 ? 'gray' : roleId === 1 ? 'yellow' : 'gold'}
+          color={roleId === 2 ? 'gray' : roleId === 1 ? 'red' : 'gold'}
           key={row.id}
         >
           {roleId === 2 ? '普通账号' : roleId === 1 ? '管理员' : '超级管理员'}
@@ -153,7 +153,7 @@ export default function Admin() {
           <Button
             danger
             type="primary"
-            disabled={row.roleId === 0}
+            hidden={row.roleId === 0}
             onClick={() => onDeleteUser(row.id)}
           >
             删除
@@ -256,6 +256,7 @@ export default function Admin() {
                 onOk={handleAddOrEditOk}
                 onCancel={handleAddCancel}
                 afterClose={handleClosed}
+                forceRender={true}
               >
                 <Form
                   form={addOrEditUserForm}
@@ -340,6 +341,37 @@ export default function Admin() {
                     ]}
                   >
                     <Input />
+                  </Form.Item>
+                  <Form.Item
+                    label="角色"
+                    name="roleId"
+                    rules={[
+                      {
+                        required: true,
+                        message: '角色为必选项!'
+                      }
+                    ]}
+                  >
+                    <Select
+                      placeholder="请选择角色"
+                      disabled={addOrEditUserForm.getFieldValue('roleId') === 0}
+                      showSearch
+                      options={[
+                        {
+                          value: 0,
+                          label: '超级管理员',
+                          disabled: true
+                        },
+                        {
+                          value: 1,
+                          label: '管理员'
+                        },
+                        {
+                          value: 2,
+                          label: '普通用户'
+                        }
+                      ]}
+                    />
                   </Form.Item>
                 </Form>
               </Modal>

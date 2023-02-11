@@ -14,42 +14,53 @@ export default [
   {
     name: '用户',
     path: '/user',
-    icon: 'smile',
-    layout: false,
+    icon: 'User',
+    hideInMenu: true, // 隐藏自己和子菜单
     routes: [
       {
         name: '登录页',
         path: '/user/login',
-        component: './User/Login'
+        component: './User/Login',
+        layout: false
       },
       {
         name: '注册页',
         path: '/user/register',
-        component: './User/Register'
+        component: './User/Register',
+        layout: false
       }
     ]
   },
   {
-    name: '首页',
-    path: '/index',
-    icon: 'smile',
-    component: '@/pages',
-    wrappers: ['@/wrappers/auth']
-  },
-  {
-    name: '管理员管理',
-    path: '/admin',
-    icon: 'smile',
-    component: '@/pages/Admin',
-    wrappers: ['@/wrappers/auth']
-  },
-  {
+    name: '布局容器',
     path: '/',
-    redirect: '/index'
-  },
-  {
-    path: '*',
-    layout: false,
-    component: '@/404'
+    component: '@/layouts/index.tsx',
+    wrappers: ['@/wrappers/auth'],
+    flatMenu: true,
+    routes: [
+      {
+        name: '首页',
+        path: '/index',
+        icon: 'HomeOutlined',
+        component: '@/pages'
+        // wrappers: ['@/wrappers/auth']
+      },
+      {
+        name: '管理员管理',
+        path: '/admin',
+        icon: 'TeamOutlined',
+        component: '@/pages/Admin'
+        // wrappers: ['@/wrappers/auth']
+      },
+      {
+        path: '/',
+        redirect: '/index'
+      },
+      {
+        path: '*',
+        layout: false,
+        component: '@/404'
+      }
+    ]
   }
 ]

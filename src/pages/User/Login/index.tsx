@@ -2,7 +2,7 @@ import styles from './index.less'
 import { Form, Input, Button, Checkbox, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { loginAPI, LoginParams } from './service'
-import { history, Link, Location } from 'umi'
+import { history, IRouteComponentProps, Link, Location } from 'umi'
 import { setToken } from '@/utils/auth'
 import { ReactNode } from 'react'
 import { User } from '@/pages/Admin/service'
@@ -86,12 +86,12 @@ export interface PropsType<T = undefined> {
   state?: T
 }
 
-export default function Login({ location }: PropsType) {
+export default function Login({ location }: IRouteComponentProps) {
   // debugger
   return (
     <div className={styles['login-container']}>
       <div id="form-login">
-        <LoginForm state={location!.state as User} />
+        <LoginForm state={location.state as User} />
       </div>
     </div>
   )

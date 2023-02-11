@@ -172,7 +172,6 @@ export default function Admin() {
   }
 
   const handleAddOrEditOk = async () => {
-    // console.log(addOrEditUserForm.getFieldsValue())
     const userInfo = addOrEditUserForm.getFieldsValue()
     const res = await (type.current === 'add'
       ? registerAPI(userInfo)

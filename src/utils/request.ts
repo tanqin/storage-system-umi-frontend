@@ -36,7 +36,7 @@ const errorHandler = (error: any) => {
   const errorText = codeMessage[responseStatus] || response?.message
   const { status, url } = response
   if (status === 401) {
-    // 无权限
+    // 无权限，交给相应拦截器处理
     return
   }
   notification.error({
@@ -71,8 +71,6 @@ const request = extend({
 
 //请求拦截
 request.interceptors.request.use((url, options) => {
-  // console.log(url, 'url')
-  // console.log(options, 'options')
   const token = getToken()
   const headers = {
     'Content-Type': 'application/json;charset=utf-8'
@@ -104,7 +102,6 @@ request.interceptors.response.use(async (response, options) => {
     // const blob = new Blob([res],{type: 'application/arrayBuffer'});
   } else {
     const res = await response.clone().json()
-    // console.log(res);
     const { code, path, msg, status } = res
     // const errorText = codeMessage[code || status ] || message;
     if (code === 401) {

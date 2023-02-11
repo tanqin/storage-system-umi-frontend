@@ -1,8 +1,7 @@
-import { PropsType } from '@/pages/User/Login'
 import { getToken } from '@/utils/auth'
-import { Redirect } from 'umi'
+import { IRouteComponentProps, Redirect } from 'umi'
 
-export default (props: PropsType) => {
+export default (props: IRouteComponentProps) => {
   if (getToken()) {
     return <div>{props.children}</div>
   } else {

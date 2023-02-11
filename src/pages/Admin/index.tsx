@@ -37,13 +37,9 @@ export default function Admin() {
       pageSize,
       params: searchParams
     })
-    setUserList(res.data || [])
-    setTotal(res.total)
+    setUserList(res?.data || [])
+    setTotal(res?.total)
   }
-
-  useEffect(() => {
-    getUserList()
-  }, [])
 
   useEffect(() => {
     getUserList()

@@ -1,4 +1,4 @@
-import { request } from 'umi'
+import request from '@/utils/request'
 
 export interface PageQueryParams {
   pageNum?: number
@@ -21,24 +21,22 @@ export interface User {
   roleId: number
 }
 
-const baseURL = 'http://localhost:8080'
-
 export async function getUserListAPI(params: PageQueryParams) {
-  return request(baseURL + '/user/pageList', {
+  return request('/user/pageList', {
     method: 'POST',
     data: params
   })
 }
 
 export async function editUserAPI(user: User) {
-  return request(baseURL + '/user/update', {
+  return request('/user/update', {
     method: 'PUT',
     data: user
   })
 }
 
 export async function deleteUserAPI<R>(id: number) {
-  return request<R>(baseURL + `/user/delete/${id}`, {
+  return request<R>(`/user/delete/${id}`, {
     method: 'DELETE'
   })
 }

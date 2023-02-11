@@ -24,11 +24,12 @@ type SearchParams = {
   params: {
     queryString?: string
     sex?: number
+    roleId?: number
   }
 }
 
 export default function Admin() {
-  const [form] = Form.useForm()
+  const [searchForm] = Form.useForm()
   const [userList, setUserList] = useState<User[]>([])
 
   const [searchParams, setSearchParams] = useState<SearchParams>({
@@ -49,12 +50,17 @@ export default function Admin() {
   }, [searchParams])
 
   // 查询用户列表
-  const onSearch = (values: { queryString: string; sex: number }) => {
+  const onSearch = (values: {
+    queryString: string
+    sex: number
+    roleId: number
+  }) => {
     setSearchParams({
       ...searchParams,
       params: {
         queryString: values.queryString,
-        sex: values.sex
+        sex: values.sex,
+        roleId: values.roleId
       }
     })
   }
@@ -66,7 +72,7 @@ export default function Admin() {
       pageSize: 10,
       params: {}
     })
-    form.resetFields()
+    searchForm.resetFields()
   }
 
   // 删除用户
@@ -137,7 +143,7 @@ export default function Admin() {
           color={roleId === 2 ? 'gray' : roleId === 1 ? 'red' : 'gold'}
           key={row.id}
         >
-          {roleId === 2 ? '普通账号' : roleId === 1 ? '管理员' : '超级管理员'}
+          {roleId === 2 ? '普通用户' : roleId === 1 ? '管理员' : '超级管理员'}
         </Tag>
       ),
       align: 'center'
@@ -214,8 +220,14 @@ export default function Admin() {
 
   return (
     <div className={styles.admin}>
+      {/* 搜索栏 */}
       <div className="search-bar">
-        <Form form={form} layout="inline" onFinish={onSearch}>
+        <Form
+          name="search-form"
+          form={searchForm}
+          layout="inline"
+          onFinish={onSearch}
+        >
           <Form.Item name="queryString">
             <Input
               placeholder="用户名/昵称/手机号"
@@ -227,6 +239,7 @@ export default function Admin() {
             <Select
               placeholder="请选择性别"
               style={{ width: 120 }}
+              allowClear
               options={[
                 {
                   value: 0,
@@ -239,6 +252,27 @@ export default function Admin() {
                 {
                   value: 2,
                   label: '未知'
+                }
+              ]}
+            />
+          </Form.Item>
+          <Form.Item name="roleId">
+            <Select
+              placeholder="请选择角色"
+              style={{ width: 120 }}
+              allowClear
+              options={[
+                {
+                  value: 0,
+                  label: '超级管理员'
+                },
+                {
+                  value: 1,
+                  label: '管理员'
+                },
+                {
+                  value: 2,
+                  label: '普通用户'
                 }
               ]}
             />
@@ -259,12 +293,13 @@ export default function Admin() {
                 forceRender={true}
               >
                 <Form
+                  name="add-or-edit-user-form"
                   form={addOrEditUserForm}
                   labelCol={{ span: 4 }}
                   wrapperCol={{ span: 20 }}
                   // onFinish={onFinish}
                   autoComplete="off"
-                  initialValues={{ sex: 2 }}
+                  initialValues={{ sex: 2, roleId: 2 }}
                 >
                   <Form.Item name="id" hidden>
                     <Input />
@@ -291,9 +326,9 @@ export default function Admin() {
                       { required: true, message: '请输入密码!' },
                       {
                         type: 'string',
-                        min: 8,
+                        min: 6,
                         max: 24,
-                        message: '密码长度需在8-24位之间!'
+                        message: '密码长度需在6-24位之间!'
                       }
                     ]}
                   >
@@ -342,20 +377,10 @@ export default function Admin() {
                   >
                     <Input />
                   </Form.Item>
-                  <Form.Item
-                    label="角色"
-                    name="roleId"
-                    rules={[
-                      {
-                        required: true,
-                        message: '角色为必选项!'
-                      }
-                    ]}
-                  >
+                  <Form.Item label="角色" name="roleId">
                     <Select
                       placeholder="请选择角色"
                       disabled={addOrEditUserForm.getFieldValue('roleId') === 0}
-                      showSearch
                       options={[
                         {
                           value: 0,
@@ -379,7 +404,6 @@ export default function Admin() {
           </Form.Item>
         </Form>
       </div>
-
       <Table
         columns={columns}
         dataSource={data}

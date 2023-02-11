@@ -18,25 +18,28 @@ import { registerAPI } from '../User/Register/service'
 import { deleteUserAPI, editUserAPI, getUserListAPI, User } from './service'
 import styles from './index.less'
 
+type SearchParams = {
+  pageNum: number
+  pageSize: number
+  params: {
+    queryString?: string
+    sex?: number
+  }
+}
+
 export default function Admin() {
   const [form] = Form.useForm()
-
   const [userList, setUserList] = useState<User[]>([])
-  type SearchParams = {
-    roleId?: number
-    queryString: string
-    sex: number
-  }
-  const [searchParams, setSearchParams] = useState<SearchParams | undefined>(
-    undefined
-  )
+
+  const [searchParams, setSearchParams] = useState<SearchParams>({
+    pageNum: 1,
+    pageSize: 10,
+    params: {}
+  })
+
   const [total, setTotal] = useState(0)
-  const getUserList = async (pageNum: number = 1, pageSize: number = 10) => {
-    const res = await getUserListAPI<User[]>({
-      pageNum,
-      pageSize,
-      params: searchParams
-    })
+  const getUserList = async () => {
+    const res = await getUserListAPI<User[]>(searchParams)
     setUserList(res?.data || [])
     setTotal(res?.total || 0)
   }
@@ -49,15 +52,21 @@ export default function Admin() {
   const onSearch = (values: { queryString: string; sex: number }) => {
     setSearchParams({
       ...searchParams,
-      queryString: values.queryString,
-      sex: values.sex
+      params: {
+        queryString: values.queryString,
+        sex: values.sex
+      }
     })
   }
 
   // 重置查询参数
   const handleReset = () => {
-    setSearchParams(undefined)
-    form.setFieldsValue({ queryString: undefined, sex: undefined })
+    setSearchParams({
+      pageNum: 1,
+      pageSize: 10,
+      params: {}
+    })
+    form.resetFields()
   }
 
   // 删除用户
@@ -78,7 +87,7 @@ export default function Admin() {
 
   const columns: ColumnsType<User> = [
     {
-      title: 'ID',
+      title: '用户编号',
       dataIndex: 'id',
       align: 'center'
     },
@@ -196,7 +205,11 @@ export default function Admin() {
 
   // 分页
   const onChange = (pageNum: number, pageSize: number) => {
-    getUserList(pageNum, pageSize)
+    setSearchParams({
+      ...searchParams,
+      pageNum,
+      pageSize
+    })
   }
 
   return (

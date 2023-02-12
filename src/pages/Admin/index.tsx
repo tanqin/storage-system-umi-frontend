@@ -17,6 +17,7 @@ import { useEffect, useRef, useState } from 'react'
 import { registerAPI } from '../User/Register/service'
 import { deleteUserAPI, editUserAPI, getUserListAPI, User } from './service'
 import styles from './index.less'
+import RoleTag from '@/components/RoleTag'
 
 type SearchParams = {
   pageNum: number
@@ -142,14 +143,7 @@ export default function Admin() {
     {
       title: '角色',
       dataIndex: 'roleId',
-      render: (roleId, row) => (
-        <Tag
-          color={roleId === 2 ? 'gray' : roleId === 1 ? 'red' : 'gold'}
-          key={row.id}
-        >
-          {roleId === 2 ? '普通用户' : roleId === 1 ? '管理员' : '超级管理员'}
-        </Tag>
-      ),
+      render: (roleId, row) => <RoleTag roleId={roleId} key={row.id} />,
       align: 'center'
     },
     {

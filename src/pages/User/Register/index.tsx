@@ -190,7 +190,7 @@ const UserRegister: FC = () => {
                 {passwordStatusMap[getPasswordStatus()]}
                 {renderPasswordProgress()}
                 <div style={{ marginTop: 10 }}>
-                  <span>请至少输入 6 个字符。请不要使用容易被猜到的密码。</span>
+                  <span>请至少输入 6 个字符的密码。</span>
                 </div>
               </div>
             )
@@ -248,7 +248,7 @@ const UserRegister: FC = () => {
             name="phone"
             rules={[
               {
-                pattern: /^\d{11}$/,
+                pattern: /^1[3-9]\d{9}$/,
                 message: '手机号格式错误!'
               }
             ]}

@@ -6,7 +6,7 @@ import { Link, useRequest, history } from 'umi'
 import type { ResultType } from './service'
 import { registerAPI } from './service'
 import styles from './style.less'
-import { User } from '@/pages/Admin/service'
+import { User } from '@/pages/Account/service'
 
 const FormItem = Form.Item
 const { Option } = Select

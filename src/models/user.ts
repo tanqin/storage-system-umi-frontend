@@ -1,4 +1,4 @@
-import { User } from '@/pages/Admin/service'
+import { User } from '@/pages/Account/service'
 import { getUserInfoAPI } from '@/pages/service'
 import { ResultType } from '@/pages/User/Register/service'
 import { Effect, ImmerReducer, Subscription } from 'umi'

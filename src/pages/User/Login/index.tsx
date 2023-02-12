@@ -5,7 +5,7 @@ import { loginAPI, LoginParams } from './service'
 import { history, IRouteComponentProps, Link, Location } from 'umi'
 import { setToken } from '@/utils/auth'
 import { ReactNode } from 'react'
-import { User } from '@/pages/Admin/service'
+import { User } from '@/pages/Account/service'
 const LoginForm = ({ state }: PropsType<User>) => {
   // debugger
   const onLogin = (values: LoginParams) => {

@@ -29,7 +29,7 @@ type SearchParams = {
   }
 }
 
-export default function Admin() {
+export default function Account() {
   const [searchForm] = Form.useForm()
   const [userList, setUserList] = useState<User[]>([])
 
@@ -217,7 +217,7 @@ export default function Admin() {
   }
 
   return (
-    <div className={styles.admin}>
+    <div className={styles.account}>
       {/* 搜索栏 */}
       <div className="search-bar">
         <Form

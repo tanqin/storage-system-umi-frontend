@@ -1,6 +1,6 @@
 import styles from './index.less'
 import { useSelector } from 'dva'
-import { Card, Tag } from 'antd'
+import { Card } from 'antd'
 import RoleTag from '@/components/RoleTag'
 
 export default function Home() {
@@ -16,7 +16,13 @@ export default function Home() {
         <span>昵称：{nickname}</span>
       </h2>
       <div>
-        <Card title="系统说明">
+        <Card title="各商品增减对比">
+          <p>各商品增减对比</p>
+        </Card>
+        <Card title="各商品收支对比">
+          <p>各商品收支对比</p>
+        </Card>
+        <Card title="系统说明" style={{ width: '100%' }}>
           <section>
             <strong>职务:</strong>
             <p>

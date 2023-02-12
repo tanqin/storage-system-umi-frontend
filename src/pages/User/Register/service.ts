@@ -1,4 +1,4 @@
-import { User } from '@/pages/Admin/service'
+import { User } from '@/pages/Account/service'
 import request from '@/utils/request'
 
 export interface ResultType<T = unknown> {

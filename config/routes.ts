@@ -34,23 +34,20 @@ export default [
   {
     name: '布局容器',
     path: '/',
-    component: '@/layouts/index.tsx',
+    component: '@/layouts',
     wrappers: ['@/wrappers/auth'],
-    flatMenu: true,
     routes: [
       {
         name: '首页',
         path: '/index',
         icon: 'HomeOutlined',
         component: '@/pages'
-        // wrappers: ['@/wrappers/auth']
       },
       {
         name: '管理员管理',
         path: '/admin',
         icon: 'TeamOutlined',
         component: '@/pages/Admin'
-        // wrappers: ['@/wrappers/auth']
       },
       {
         path: '/',

@@ -101,9 +101,13 @@ export default function Admin() {
       title: '账号',
       dataIndex: 'username',
       render: (username, row) => (
-        <a href="javascript(0):;" key={row.id}>
+        <Button
+          type="link"
+          key={row.id}
+          onClick={() => showAddOrEditModal(row)}
+        >
           {username}
-        </a>
+        </Button>
       ),
       align: 'center'
     },
@@ -122,7 +126,7 @@ export default function Admin() {
       dataIndex: 'sex',
       render: (sex, row) => (
         <Tag
-          color={sex === 0 ? 'pink' : sex === 1 ? 'skyblue' : 'grey'}
+          color={sex === 0 ? 'pink' : sex === 1 ? 'blue' : 'grey'}
           key={row.id}
         >
           {sex === 0 ? '女' : sex === 1 ? '男' : '未知'}

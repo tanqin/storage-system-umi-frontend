@@ -34,28 +34,28 @@ const errorHandler = (error: any) => {
 
   const responseStatus = response?.code as CodeMessageKey
   const errorText = codeMessage[responseStatus] || response?.message
-  const { status, url } = response
-  if (status === 401) {
+  const { code, url } = response
+  if (code === 401) {
     // 无权限，交给相应拦截器处理
     return
   }
   notification.error({
-    message: `请求错误 ${status}: ${url}`,
+    message: `请求错误 ${code}: ${url}`,
     description: errorText
   })
   if (error) {
     removeToken()
   }
   // environment should not be used
-  if (status === 403) {
+  if (code === 403) {
     history.push('/403')
     return
   }
-  if (status <= 504 && status >= 500) {
+  if (code <= 504 && code >= 500) {
     history.push('/500')
     return
   }
-  if (status >= 404 && status < 422) {
+  if (code >= 404 && code < 422) {
     history.push('/404')
   }
 }

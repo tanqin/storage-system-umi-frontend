@@ -1,7 +1,7 @@
 import { User } from '@/pages/Admin/service'
 import request from '@/utils/request'
 
-export interface ResultType<T> {
+export interface ResultType<T = unknown> {
   code: number
   message: string
   total?: number | null

@@ -79,11 +79,11 @@ const UserRegister: FC = () => {
     return 'poor'
   }
 
-  const { loading: submitting, run: register } = useRequest<ResultType<null>>(
+  const { loading: submitting, run: register } = useRequest<ResultType>(
     registerAPI,
     {
       manual: true,
-      onSuccess: (res, params: User[]) => {
+      onSuccess: (res: ResultType, params: User[]) => {
         // debugger
         if (res.code === 200) {
           message.success(res.message)

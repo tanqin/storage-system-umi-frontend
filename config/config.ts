@@ -2,7 +2,10 @@ import { defineConfig } from 'umi'
 import routes from './routes'
 export default defineConfig({
   favicon: '/favicon.svg',
-  dva: {},
+  dva: {
+    immer: true, // 启用 immer 以方便修改 reducer
+    hmr: true // 启用 dva model 的热更新
+  },
   nodeModulesTransform: {
     type: 'none'
   },
@@ -12,7 +15,7 @@ export default defineConfig({
   layout: {
     // 所有配置项：https://procomponents.ant.design/components/layout#prolayout
     title: '仓库管理系统',
-    logo: 'logo.png',
+    logo: '/logo.png',
     locale: 'zh-CN',
     contentStyle: { padding: '20px' }, // layout 的内容区 style
     siderWidth: 194

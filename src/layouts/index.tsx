@@ -1,5 +1,4 @@
-import { IRouteComponentProps, useModel } from 'umi'
-import { useSelector } from 'dva'
+import { IRouteComponentProps, useModel, useSelector } from 'umi'
 import { useEffect } from 'react'
 
 export default function Layout({ children }: IRouteComponentProps) {

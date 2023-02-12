@@ -18,6 +18,7 @@ import { registerAPI } from '../User/Register/service'
 import { deleteUserAPI, editUserAPI, getUserListAPI, User } from './service'
 import styles from './index.less'
 import RoleTag from '@/components/RoleTag'
+import { useSelector } from 'umi'
 
 type SearchParams = {
   pageNum: number
@@ -32,6 +33,9 @@ type SearchParams = {
 export default function Account() {
   const [searchForm] = Form.useForm()
   const [userList, setUserList] = useState<User[]>([])
+  const {
+    userInfo: { roleId }
+  } = useSelector((state: any) => state.user)
 
   const [searchParams, setSearchParams] = useState<SearchParams>({
     pageNum: 1,
@@ -254,7 +258,7 @@ export default function Account() {
               ]}
             />
           </Form.Item>
-          <Form.Item name="roleId">
+          <Form.Item name="roleId" hidden={roleId !== 0}>
             <Select
               placeholder="请选择角色"
               style={{ width: 120 }}
@@ -375,7 +379,7 @@ export default function Account() {
                   >
                     <Input />
                   </Form.Item>
-                  <Form.Item label="角色" name="roleId">
+                  <Form.Item label="角色" name="roleId" hidden={roleId !== 0}>
                     <Select
                       placeholder="请选择角色"
                       disabled={addOrEditUserForm.getFieldValue('roleId') === 0}

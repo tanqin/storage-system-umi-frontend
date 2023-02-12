@@ -1,6 +1,5 @@
 import { history } from 'umi'
 import { removeToken } from './utils/auth'
-import { useSelector } from 'dva'
 export type InitialState = {
   name: string
   avatar: string

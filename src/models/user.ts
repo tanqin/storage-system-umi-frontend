@@ -1,6 +1,7 @@
 import { User } from '@/pages/Account/service'
 import { getUserInfoAPI } from '@/pages/service'
 import { ResultType } from '@/pages/User/Register/service'
+import { getToken } from '@/utils/auth'
 import { Effect, ImmerReducer, Subscription } from 'umi'
 
 export interface ModelState {
@@ -51,6 +52,8 @@ const UserModel: ModelType = {
       return history.listen(({ pathname }) => {
         if (!whiteList.find((path) => path === pathname)) {
           dispatch({ type: 'getUserInfo' })
+        } else if (pathname === '/user/login' && getToken()) {
+          history.push('/')
         }
       })
     }

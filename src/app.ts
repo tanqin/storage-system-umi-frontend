@@ -7,13 +7,12 @@ export type InitialState = {
 }
 
 // 获取初始化数据
-// export function getInitialState(): InitialState {
-//   return {
-//     name: 'admin',
-//     avatar:
-//       'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png'
-//   }
-// }
+export function getInitialState(): InitialState {
+  return {
+    name: '',
+    avatar: ''
+  }
+}
 
 // 退出登录
 export const layout = {

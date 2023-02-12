@@ -1,16 +1,11 @@
 import styles from './index.less'
-import { useDispatch, useSelector } from 'dva'
-import { useEffect } from 'react'
+import { useSelector } from 'dva'
 import { Tag } from 'antd'
+
 export default function Home() {
-  const dispatch = useDispatch()
   const {
     userInfo: { roleId, username, nickname }
   } = useSelector((state: any) => state.user)
-
-  useEffect(() => {
-    dispatch({ type: 'user/getUserInfo' })
-  }, [])
 
   return (
     <div className={styles.home}>

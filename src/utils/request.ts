@@ -44,18 +44,16 @@ const errorHandler = (error: any) => {
     description: errorText
   })
   if (error) {
-    removeToken()
+    console.log(error)
   }
   // environment should not be used
   if (code === 403) {
+    removeToken()
     history.push('/403')
-    return
-  }
-  if (code <= 504 && code >= 500) {
+  } else if (code <= 504 && code >= 500) {
+    removeToken()
     history.push('/500')
-    return
-  }
-  if (code >= 404 && code < 422) {
+  } else if (code >= 404 && code < 422) {
     history.push('/404')
   }
 }

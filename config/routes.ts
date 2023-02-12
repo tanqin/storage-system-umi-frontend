@@ -36,6 +36,7 @@ export default [
     path: '/',
     component: '@/layouts',
     wrappers: ['@/wrappers/auth'],
+    flatMenu: true,
     routes: [
       {
         name: '首页',

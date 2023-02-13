@@ -49,6 +49,7 @@ function parseRoutes(authRoutes: any[]) {
     return authRoutes.map((item: any) => ({
       ...item,
       //  Ant Design 的图标库 ==> https://www.iconfont.cn/collections/detail?cid=9402
+      // 图标批量入库：进入 https://www.iconfont.cn/collections/detail?cid=9402 => F12 => document.querySelectorAll('.icon-gouwuche1').forEach(i=>setTimeout(()=>{i.click()}))
       icon: <IconFont type={item.icon} />,
       component: require(`${item.component}`).default
     }))

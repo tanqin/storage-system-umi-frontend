@@ -42,6 +42,7 @@ export default function Menu() {
     }
   }
 
+  // 获取菜单列表
   const getMenuList = async () => {
     const { data: menuList = [], total } = await getMenuListAPI(searchParams)
     menuList.forEach((item) => {
@@ -111,6 +112,7 @@ export default function Menu() {
     setAddOrEditModalShow(true)
   }
 
+  // 新增或编辑菜单
   const handleAddOrEdit = async (menu: IRoute) => {
     let menuInfo = addOrEditForm.getFieldsValue()
     if (menu.id) menuInfo = menu
@@ -127,16 +129,18 @@ export default function Menu() {
     }
   }
 
-  const handleAddCancel = () => {
+  // 取消新增或编辑操作
+  const handleAddOrEditCancel = () => {
     setAddOrEditModalShow(false)
   }
 
+  // 关闭新增或删除模态框
   const handleClosed = () => {
     addOrEditForm.resetFields()
   }
 
-  // 删除
-  const onDelete = (id: number) => {
+  // 删除菜单项
+  const handleDeleteMenu = (id: number) => {
     Modal.confirm({
       title: '删除提示',
       icon: <ExclamationCircleOutlined />,
@@ -151,11 +155,13 @@ export default function Menu() {
     })
   }
 
-  // 修改菜单状态
+  // 修改菜单启用状态
   const onChangeValid = (checked: boolean, row: IRoute) => {
     row.isValid = checked
     handleAddOrEdit(row)
   }
+
+  // 表格列配置
   const columns: ColumnsType<IRoute> = [
     {
       title: '菜单名称',
@@ -244,7 +250,11 @@ export default function Menu() {
           >
             编辑
           </Button>
-          <Button danger type="primary" onClick={() => onDelete(row.id)}>
+          <Button
+            danger
+            type="primary"
+            onClick={() => handleDeleteMenu(row.id)}
+          >
             删除
           </Button>
         </Space>
@@ -252,6 +262,37 @@ export default function Menu() {
       align: 'center'
     }
   ]
+
+  const [iconList, setIconList] = useState<{ value: string; label: string }[]>(
+    []
+  )
+
+  // 获取 iconfont 图标名称列表
+  const getIconList = () => {
+    fetch(process.env.iconScriptUrl as string)
+      .then((res) => res.text())
+      .then((res) => {
+        const sliceRes = res.slice(
+          res.indexOf(`<symbol id="`) + 10,
+          res.lastIndexOf(`" viewBox="`) + 10
+        )
+        const iconList = sliceRes.split(`<symbol id="`).map((str) => {
+          const iconValue = str.slice(
+            str.indexOf('icon-'),
+            str.lastIndexOf(`" viewBox=`)
+          )
+          const iconLabel = iconValue.replace('icon-', '')
+          return {
+            value: iconValue,
+            label: iconLabel
+          }
+        })
+        setIconList(iconList)
+      })
+  }
+  useEffect(() => {
+    getIconList()
+  }, [])
 
   return (
     <div>
@@ -303,7 +344,7 @@ export default function Menu() {
                 title={type.current === 'add' ? '新增' : '编辑'}
                 open={addOrEditModalShow}
                 onOk={handleAddOrEdit}
-                onCancel={handleAddCancel}
+                onCancel={handleAddOrEditCancel}
                 afterClose={handleClosed}
                 forceRender={true}
               >
@@ -312,7 +353,6 @@ export default function Menu() {
                   form={addOrEditForm}
                   labelCol={{ span: 5 }}
                   wrapperCol={{ span: 20 }}
-                  // onFinish={onFinish}
                   autoComplete="off"
                   initialValues={{ level: 1, roleIds: ['0'], is_valid: true }}
                 >
@@ -335,39 +375,22 @@ export default function Menu() {
                     <Input />
                   </Form.Item>
                   <Form.Item label="图标" name="icon">
-                    <Select placeholder="请选择图标" optionLabelProp="label">
-                      {[
-                        {
-                          value: 'icon-database',
-                          label: 'database'
-                        },
-                        {
-                          value: 'icon-gold',
-                          label: 'gold'
-                        },
-                        {
-                          value: 'icon-tag',
-                          label: 'tag'
-                        },
-                        {
-                          value: 'icon-team',
-                          label: 'team'
-                        },
-                        {
-                          value: 'icon-menu',
-                          label: 'menu'
-                        },
-                        {
-                          value: 'icon-book',
-                          label: 'book'
-                        }
-                      ].map((item) => (
+                    <Select
+                      placeholder="请选择图标(可搜索)"
+                      optionLabelProp="label"
+                      showSearch
+                    >
+                      {iconList.map((item) => (
                         <Select.Option
                           key={item.value}
                           value={item.value}
-                          label={<IconFont type={item.value} />}
+                          label={
+                            <>
+                              <IconFont type={item.value} /> {item.value}
+                            </>
+                          }
                         >
-                          <IconFont type={item.value} />
+                          <IconFont type={item.value} /> {item.value}
                         </Select.Option>
                       ))}
                     </Select>

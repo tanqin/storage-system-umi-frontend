@@ -4,8 +4,9 @@ export default defineConfig({
   define: {
     'process.env': {
       NODE_ENV: 'development',
-      baseUrl: 'http://localhost:8080' // 后端地址
-      // baseUrl: 'http://localhost:8000' // mock 地址
+      baseUrl: 'http://localhost:8080', // 后端地址
+      // baseUrl: 'http://localhost:8000', // mock 地址
+      iconScriptUrl: '//at.alicdn.com/t/c/font_3892069_mulu0r67sx8.js' // Ant Design iconfont 图标库
     }
   },
   favicon: '/favicon.svg',

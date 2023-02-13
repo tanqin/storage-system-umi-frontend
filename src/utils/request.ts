@@ -7,8 +7,10 @@ import { notification, Modal } from 'antd'
 import { getToken, removeToken } from './auth'
 import sysConfig from './sysConfig'
 import { history } from 'umi'
+import { ResultType } from '@/pages/User/Register/service'
+import type { ResponseError } from 'umi-request'
 
-const codeMessage = {
+export const codeMessage = {
   200: '服务器成功返回请求的数据。',
   201: '新建或修改数据成功。',
   202: '一个请求已经进入后台排队（异步任务）。',
@@ -25,28 +27,23 @@ const codeMessage = {
   503: '服务不可用，服务器暂时过载或维护。',
   504: '网关超时。'
 }
-type CodeMessageKey = keyof typeof codeMessage
+
+export type CodeMessageKey = keyof typeof codeMessage
+
 /**
  * 异常处理程序
  */
-const errorHandler = (error: any) => {
-  const { response = {} } = error
-
-  const responseStatus = response?.code as CodeMessageKey
-  const errorText = codeMessage[responseStatus] || response?.message
-  const { code, url } = response
-  if (code === 401) {
-    // 无权限，交给相应拦截器处理
+const errorHandler = (error: ResponseError) => {
+  if (!error.response) {
+    const code = 503
+    notification.error({
+      message: `${code} : ${error.request.url}`,
+      description: '请求错误: ' + codeMessage[code]
+    })
     return
   }
-  notification.error({
-    message: `请求错误 ${code}: ${url}`,
-    description: errorText
-  })
-  if (error) {
-    console.log(error)
-  }
-  // environment should not be used
+  const { status } = error.response
+  const code = status as CodeMessageKey
   if (code === 403) {
     removeToken()
     history.push('/403')
@@ -59,12 +56,12 @@ const errorHandler = (error: any) => {
 }
 
 /**
- * 配置request请求时的默认参数
+ * 配置请求时的默认参数
  */
 const request = extend({
-  errorHandler, // 默认错误处理
-  timeout: 10000,
-  credentials: 'include' // 默认请求是否带上cookie,
+  errorHandler,
+  timeout: 60000,
+  credentials: 'include' // 默认请求是否带上 cookie
 })
 
 //请求拦截
@@ -95,13 +92,15 @@ request.interceptors.request.use((url, options) => {
 
 //响应拦截
 request.interceptors.response.use(async (response, options) => {
+  const status = response.status as CodeMessageKey
   if (response.url.indexOf('personnel/exportById') !== -1) {
-    const res = await response.clone().text()
+    // const res = await response.clone().text()
     // const blob = new Blob([res],{type: 'application/arrayBuffer'});
   } else {
-    const res = await response.clone().json()
-    const { code, path, msg, status } = res
-    // const errorText = codeMessage[code || status ] || message;
+    const res: ResultType = await response.clone().json()
+    const { code, message } = res
+    const errorText = codeMessage[code || status] || message
+    // debugger
     if (code === 401) {
       Modal.confirm({
         title: '系统提示',
@@ -114,12 +113,10 @@ request.interceptors.response.use(async (response, options) => {
         }
       })
     } else if (code !== 200) {
-      // 待开放
-      // notification.error({
-      //   message: `请求错误 ${code || status }: ${path}`,
-      //   description: errorText,
-      // });
-      // return Promise.reject('error');
+      notification.error({
+        message: `${code || status} : ${response.url}`,
+        description: '请求错误: ' + errorText
+      })
     }
   }
   return response

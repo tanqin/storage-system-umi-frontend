@@ -44,42 +44,42 @@ export default [
         icon: 'HomeOutlined',
         component: '@/pages'
       },
-      {
-        name: '仓库管理',
-        path: '/storage',
-        icon: 'TeamOutlined',
-        component: '@/pages/Storage'
-      },
-      {
-        name: '种类管理',
-        path: '/kind',
-        icon: 'TeamOutlined',
-        component: '@/pages/Kind'
-      },
-      {
-        name: '物品管理',
-        path: '/goods',
-        icon: 'TeamOutlined',
-        component: '@/pages/Goods'
-      },
-      {
-        name: '日志记录',
-        path: '/log',
-        icon: 'TeamOutlined',
-        component: '@/pages/Log'
-      },
-      {
-        name: '账号管理',
-        path: '/account',
-        icon: 'TeamOutlined',
-        component: '@/pages/Account'
-      },
-      {
-        name: '菜单管理',
-        path: '/menu',
-        icon: 'TeamOutlined',
-        component: '@/pages/Menu'
-      },
+      // {
+      //   name: '仓库管理',
+      //   path: '/storage',
+      //   icon: 'TeamOutlined',
+      //   component: '@/pages/Storage'
+      // },
+      // {
+      //   name: '种类管理',
+      //   path: '/kind',
+      //   icon: 'TeamOutlined',
+      //   component: '@/pages/Kind'
+      // },
+      // {
+      //   name: '物品管理',
+      //   path: '/goods',
+      //   icon: 'TeamOutlined',
+      //   component: '@/pages/Goods'
+      // },
+      // {
+      //   name: '日志记录',
+      //   path: '/log',
+      //   icon: 'TeamOutlined',
+      //   component: '@/pages/Log'
+      // },
+      // {
+      //   name: '账号管理',
+      //   path: '/account',
+      //   icon: 'TeamOutlined',
+      //   component: '@/pages/Account'
+      // },
+      // {
+      //   name: '菜单管理',
+      //   path: '/menu',
+      //   icon: 'TeamOutlined',
+      //   component: '@/pages/Menu'
+      // },
       {
         path: '/',
         redirect: '/index'

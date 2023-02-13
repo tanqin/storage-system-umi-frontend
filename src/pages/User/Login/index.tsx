@@ -2,7 +2,7 @@ import styles from './index.less'
 import { Form, Input, Button, Checkbox, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { loginAPI, LoginParams } from './service'
-import { history, IRouteComponentProps, Link, Location } from 'umi'
+import { history, IRouteComponentProps, Link, Location, useModel } from 'umi'
 import { setToken } from '@/utils/auth'
 import { ReactNode } from 'react'
 import { User } from '@/pages/Account/service'
@@ -13,6 +13,7 @@ const LoginForm = ({ state }: PropsType<User>) => {
       username: values.username,
       password: values.password
     }).then((res) => {
+      if (!res) return
       if (res.code === 200 && res.data?.token) {
         setToken(res.data.token)
         message.success('登录成功！', 1)

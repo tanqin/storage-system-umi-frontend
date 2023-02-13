@@ -48,9 +48,16 @@ const UserModel: ModelType = {
   // 订阅监听，如我们监听路由，路有变化处理执行相应逻辑
   subscriptions: {
     setup({ dispatch, history }) {
-      const whiteList = ['/user/login', '/user/register']
+      const whiteList = [
+        '/user/login',
+        '/user/register',
+        '/403',
+        '/404',
+        '/500'
+      ]
       return history.listen(({ pathname }) => {
         if (!whiteList.find((path) => path === pathname)) {
+          // debugger
           dispatch({ type: 'getUserInfo' })
         } else if (pathname === '/user/login' && getToken()) {
           history.push('/')

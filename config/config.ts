@@ -15,7 +15,7 @@ export default defineConfig({
   layout: {
     // 所有配置项：https://procomponents.ant.design/components/layout#prolayout
     title: '仓库管理系统',
-    logo: '/logo.png',
+    logo: '/favicon.svg',
     locale: 'zh-CN',
     contentStyle: { padding: '20px' }, // layout 的内容区 style
     siderWidth: 194

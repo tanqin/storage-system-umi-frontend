@@ -14,3 +14,16 @@ export async function getMenuListAPI(params: PageQueryParams) {
     data: params
   })
 }
+
+export async function addOrEditMenuAPI(params: IRoute) {
+  return request<ResultType>('/menu/saveOrUpdate', {
+    method: 'POST',
+    data: params
+  })
+}
+
+export async function deleteMenuAPI(id: number) {
+  return request<ResultType>(`/menu/delete/${id}`, {
+    method: 'DELETE'
+  })
+}

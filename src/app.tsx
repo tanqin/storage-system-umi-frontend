@@ -50,7 +50,7 @@ function parseRoutes(authRoutes: any[]) {
       ...item,
       //  Ant Design 的图标库 ==> https://www.iconfont.cn/collections/detail?cid=9402
       icon: <IconFont type={item.icon} />,
-      component: require(`${item.component}/index.tsx`).default
+      component: require(`${item.component}`).default
     }))
   }
 }

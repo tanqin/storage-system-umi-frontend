@@ -1,11 +1,27 @@
 import IconFont from '@/components/IconFont'
 import RoleTag from '@/components/RoleTag'
-import { SearchOutlined } from '@ant-design/icons'
-import { Button, Form, Input, Select, Space, Table } from 'antd'
+import {
+  ExclamationCircleOutlined,
+  InfoCircleOutlined,
+  SearchOutlined
+} from '@ant-design/icons'
+import {
+  Button,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Modal,
+  Select,
+  Space,
+  Switch,
+  Table,
+  Tooltip
+} from 'antd'
 import { ColumnsType } from 'antd/es/table'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { IRoute } from 'umi'
-import { getMenuListAPI } from './service'
+import { addOrEditMenuAPI, deleteMenuAPI, getMenuListAPI } from './service'
 
 export default function Menu() {
   const [searchForm] = Form.useForm()
@@ -27,26 +43,30 @@ export default function Menu() {
   }
 
   const getMenuList = async () => {
-    const { data: menuList = [] } = await getMenuListAPI(searchParams)
+    const { data: menuList = [], total } = await getMenuListAPI(searchParams)
+    menuList.forEach((item) => {
+      item.roleIds = item.roleIds.split(',')
+    })
     menuList.unshift({
       id: -1,
       pid: 0,
       name: '首页',
       path: '/index',
-      icon: 'icon-database',
+      icon: 'icon-home',
       component: './pages',
       level: 0,
-      roleIds: '0,1,2'
+      roleIds: ['0', '1', '2'],
+      isValid: true
     })
-    setMenuList(menuList)
-    setTotal(0)
+    setMenuList(JSON.parse(JSON.stringify(menuList)))
+    setTotal(total || 0)
   }
   useEffect(() => {
     getMenuList()
   }, [searchParams])
 
   // 分页
-  const onChange = (pageNum: number, pageSize: number) => {
+  const onPagination = (pageNum: number, pageSize: number) => {
     setSearchParams({
       ...searchParams,
       pageNum,
@@ -77,6 +97,65 @@ export default function Menu() {
     searchForm.resetFields()
   }
 
+  const type = useRef('add')
+  const [addOrEditModalShow, setAddOrEditModalShow] = useState(false)
+  const [addOrEditForm] = Form.useForm<IRoute>()
+
+  // 新增或编辑模态框
+  const showAddOrEditModal = (row: IRoute) => {
+    type.current = 'add'
+    if (row.id) {
+      type.current = 'edit'
+      addOrEditForm.setFieldsValue(row)
+    }
+    setAddOrEditModalShow(true)
+  }
+
+  const handleAddOrEdit = async (menu: IRoute) => {
+    let menuInfo = addOrEditForm.getFieldsValue()
+    if (menu.id) menuInfo = menu
+    menuInfo.roleIds = menuInfo.roleIds.join(',')
+    const res = await addOrEditMenuAPI(menuInfo)
+    if (res.code === 200) {
+      message.success(res.message, 2)
+      addOrEditForm.resetFields()
+      setAddOrEditModalShow(false)
+      // window.location.href = '/menu'
+      getMenuList()
+    } else {
+      message.error(res.message)
+    }
+  }
+
+  const handleAddCancel = () => {
+    setAddOrEditModalShow(false)
+  }
+
+  const handleClosed = () => {
+    addOrEditForm.resetFields()
+  }
+
+  // 删除
+  const onDelete = (id: number) => {
+    Modal.confirm({
+      title: '删除提示',
+      icon: <ExclamationCircleOutlined />,
+      content: '您确认删除该菜单项吗？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: async () => {
+        const res = await deleteMenuAPI(id)
+        message[res.code === 200 ? 'success' : 'error'](res.message)
+        getMenuList()
+      }
+    })
+  }
+
+  // 修改菜单状态
+  const onChangeValid = (checked: boolean, row: IRoute) => {
+    row.isValid = checked
+    handleAddOrEdit(row)
+  }
   const columns: ColumnsType<IRoute> = [
     {
       title: '菜单名称',
@@ -86,33 +165,35 @@ export default function Menu() {
           disabled={row.id === -1}
           type="link"
           key={row.id}
-          // onClick={() => showAddOrEditModal(row)}
+          onClick={() => showAddOrEditModal(JSON.parse(JSON.stringify(row)))}
         >
           {name}
         </Button>
       ),
       align: 'center'
     },
-    {
-      title: '菜单id',
-      dataIndex: 'id',
-      align: 'center'
-    },
-    {
-      title: '父级id',
-      dataIndex: 'pid',
-      align: 'center'
-    },
-    {
-      title: '路径',
-      dataIndex: 'path',
-      align: 'center'
-    },
+    // {
+    //   title: '菜单id',
+    //   dataIndex: 'id',
+    //   align: 'center'
+    // },
+    // {
+    //   title: '父级id',
+    //   dataIndex: 'pid',
+    //   align: 'center'
+    // },
     {
       title: '图标',
       dataIndex: 'icon',
       align: 'center',
-      render: (icon, row) => <IconFont type={icon} style={{ fontSize: 20 }} />
+      render: (icon, row) => (
+        <IconFont key={row.id} type={icon} style={{ fontSize: 20 }} />
+      )
+    },
+    {
+      title: '路由地址',
+      dataIndex: 'path',
+      align: 'center'
     },
     {
       title: '组件路径',
@@ -129,25 +210,41 @@ export default function Menu() {
       dataIndex: 'roleIds',
       align: 'left',
       width: 260,
-      render: (roleIds: string, row) => {
-        return roleIds
-          .split(',')
-          .map((roleId) => <RoleTag roleId={parseInt(roleId)} />)
+      render: (roleIds: string[], row) => {
+        return roleIds.map((roleId) => (
+          <RoleTag key={roleId} roleId={parseInt(roleId)} />
+        ))
+      }
+    },
+    {
+      title: '菜单状态',
+      dataIndex: 'isValid',
+      align: 'center',
+      render: (isValid: boolean, row) => {
+        return (
+          <Switch
+            disabled={row.id === -1}
+            key={row.id}
+            checkedChildren="开启"
+            unCheckedChildren="关闭"
+            checked={isValid}
+            onChange={(checked) => onChangeValid(checked, row)}
+          />
+        )
       }
     },
     {
       title: '操作',
       dataIndex: 'operation',
       render: (_, row) => (
-        <Space hidden={row.id === -1}>
-          <Button type="primary" /*  onClick={() => showAddOrEditModal(row)} */>
+        <Space hidden={row.id === -1} key={row.id}>
+          <Button
+            type="primary"
+            onClick={() => showAddOrEditModal(JSON.parse(JSON.stringify(row)))}
+          >
             编辑
           </Button>
-          <Button
-            danger
-            type="primary"
-            /*  onClick={() => onDeleteUser(row.id)} */
-          >
+          <Button danger type="primary" onClick={() => onDelete(row.id)}>
             删除
           </Button>
         </Space>
@@ -190,7 +287,7 @@ export default function Menu() {
                 },
                 {
                   value: '2',
-                  label: '普通用户'
+                  label: '普通'
                 }
               ]}
             />
@@ -201,123 +298,146 @@ export default function Menu() {
                 查询
               </Button>
               <Button onClick={handleReset}>重置</Button>
-              {/* <Button onClick={() => showAddOrEditModal()}>新增</Button>
+              <Button onClick={showAddOrEditModal}>新增</Button>
               <Modal
-                title={type.current === 'add' ? '新增用户' : '编辑用户'}
-                open={isAddOrEditModalOpen}
-                onOk={handleAddOrEditOk}
+                title={type.current === 'add' ? '新增' : '编辑'}
+                open={addOrEditModalShow}
+                onOk={handleAddOrEdit}
                 onCancel={handleAddCancel}
                 afterClose={handleClosed}
                 forceRender={true}
               >
                 <Form
-                  name="add-or-edit-user-form"
-                  form={addOrEditUserForm}
-                  labelCol={{ span: 4 }}
+                  name="add-or-edit-form"
+                  form={addOrEditForm}
+                  labelCol={{ span: 5 }}
                   wrapperCol={{ span: 20 }}
                   // onFinish={onFinish}
                   autoComplete="off"
-                  initialValues={{ sex: 2, roleId: 2 }}
+                  initialValues={{ level: 1, roleIds: ['0'], is_valid: true }}
                 >
                   <Form.Item name="id" hidden>
                     <Input />
                   </Form.Item>
                   <Form.Item
-                    label="用户名"
-                    name="username"
+                    label="菜单名称"
+                    name="name"
                     rules={[
-                      { required: true, message: '请输入用户名!' },
+                      { required: true, message: '请输入菜单名称!' },
                       {
                         type: 'string',
                         min: 2,
-                        max: 24,
-                        message: '用户名字符长度需在2-24位之间'
+                        max: 16,
+                        message: '名字符长度需在2-16位之间'
                       }
                     ]}
                   >
                     <Input />
                   </Form.Item>
-                  <Form.Item
-                    label="密码"
-                    name="password"
-                    rules={[
-                      { required: true, message: '请输入密码!' },
-                      {
-                        type: 'string',
-                        min: 6,
-                        max: 24,
-                        message: '密码长度需在6-24位之间!'
-                      }
-                    ]}
-                  >
-                    <Input.Password />
-                  </Form.Item>
-                  <Form.Item label="昵称" name="nickname">
-                    <Input />
-                  </Form.Item>
-                  <Form.Item
-                    label="年龄"
-                    name="age"
-                    rules={[
-                      {
-                        required: false,
-                        transform: (value: number) => {
-                          return value && String(value)
+                  <Form.Item label="图标" name="icon">
+                    <Select placeholder="请选择图标" optionLabelProp="label">
+                      {[
+                        {
+                          value: 'icon-database',
+                          label: 'database'
                         },
-                        pattern: /^(0|[1-9]\d*)$/,
-                        message: '年龄只能为 0 或正整数!'
-                      }
-                    ]}
-                  >
-                    <InputNumber
-                      // precision={0}
-                      min={0}
-                      max={130}
-                      style={{ width: '30%' }}
-                    />
-                  </Form.Item>
-                  <Form.Item label="性别" name="sex">
-                    <Radio.Group>
-                      <Radio value={2}> 未知 </Radio>
-                      <Radio value={0}> 女 </Radio>
-                      <Radio value={1}> 男 </Radio>
-                    </Radio.Group>
+                        {
+                          value: 'icon-gold',
+                          label: 'gold'
+                        }
+                      ].map((item) => (
+                        <Select.Option
+                          key={item.value}
+                          value={item.value}
+                          label={<IconFont type={item.value} />}
+                        >
+                          <IconFont type={item.value} />
+                        </Select.Option>
+                      ))}
+                    </Select>
                   </Form.Item>
                   <Form.Item
-                    label="手机号码"
-                    name="phone"
-                    rules={[
-                      {
-                        pattern: /^1[3-9]\d{9}$/,
-                        message: '手机号格式错误!'
-                      }
-                    ]}
+                    // label="路由地址"
+                    label={
+                      <>
+                        路由地址
+                        <span hidden={type.current === 'add'}>
+                          <Tooltip
+                            destroyTooltipOnHide
+                            title="谨慎更改！"
+                            color="orange"
+                            placement="topRight"
+                          >
+                            <InfoCircleOutlined
+                              className="ml5"
+                              style={{ color: 'orange' }}
+                            />
+                          </Tooltip>
+                        </span>
+                      </>
+                    }
+                    name="path"
+                    rules={[{ required: true, message: '请输入路由路径!' }]}
                   >
                     <Input />
                   </Form.Item>
-                  <Form.Item label="角色" name="roleId">
+                  <Form.Item
+                    // label="组件路径"
+                    label={
+                      <>
+                        组件路径
+                        <span hidden={type.current === 'add'}>
+                          <Tooltip
+                            title="谨慎更改！"
+                            color="orange"
+                            placement="topRight"
+                          >
+                            <InfoCircleOutlined
+                              className="ml5"
+                              style={{ color: 'orange' }}
+                            />
+                          </Tooltip>
+                        </span>
+                      </>
+                    }
+                    rules={[{ required: true, message: '请输入组件路径!' }]}
+                    name="component"
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Form.Item label="排序级别" name="level">
+                    <InputNumber min={1} style={{ width: '30%' }} />
+                  </Form.Item>
+                  <Form.Item label="授权角色" name="roleIds">
                     <Select
+                      mode="multiple"
                       placeholder="请选择角色"
-                      disabled={addOrEditUserForm.getFieldValue('roleId') === 0}
                       options={[
                         {
-                          value: 0,
+                          value: '0',
                           label: '超级管理员',
                           disabled: true
                         },
                         {
-                          value: 1,
+                          value: '1',
                           label: '管理员'
                         },
                         {
-                          value: 2,
-                          label: '普通用户'
+                          value: '2',
+                          label: '普通'
                         }
                       ]}
                     />
                   </Form.Item>
+                  <Form.Item
+                    label="菜单状态"
+                    name="isValid"
+                    valuePropName="checked"
+                  >
+                    <Switch checkedChildren="开启" unCheckedChildren="关闭" />
+                  </Form.Item>
                 </Form>
-              </Modal> */}
+              </Modal>
             </Space>
           </Form.Item>
         </Form>
@@ -334,7 +454,7 @@ export default function Menu() {
           showTotal: (total) => `总 ${total} 条`,
           defaultPageSize: 10,
           defaultCurrent: 1,
-          onChange: onChange
+          onChange: onPagination
         }}
       />
     </div>

@@ -1,5 +1,5 @@
 import { history } from 'umi'
-import { getMenuListAPI } from './pages/Menu/service'
+import { getMenuAuthAPI } from './pages/Menu/service'
 import { getToken, removeToken } from './utils/auth'
 import { createFromIconfontCN } from '@ant-design/icons'
 export type InitialState = {
@@ -52,8 +52,8 @@ export function patchRoutes({ routes }: { routes: Array<any> }) {
 export function render(oldRender: any) {
   // 将 oldRender 存为 window 变量，才能在登陆后重新获取路由。参考：https://github.com/umijs/umi/issues/2511
   if (getToken()) {
-    getMenuListAPI().then((res) => {
-      authRoutes = res.data as Array<any>
+    getMenuAuthAPI().then((res) => {
+      authRoutes = (res?.data || []) as Array<any>
       oldRender()
     })
   } else {

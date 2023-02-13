@@ -16,7 +16,6 @@ import type { ColumnsType } from 'antd/es/table'
 import { useEffect, useRef, useState } from 'react'
 import { registerAPI } from '../User/Register/service'
 import { deleteUserAPI, editUserAPI, getUserListAPI, User } from './service'
-import styles from './index.less'
 import RoleTag from '@/components/RoleTag'
 import { useSelector } from 'umi'
 
@@ -221,7 +220,7 @@ export default function Account() {
   }
 
   return (
-    <div className={styles.account}>
+    <div>
       {/* 搜索栏 */}
       <div className="search-bar">
         <Form

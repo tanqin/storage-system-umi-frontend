@@ -45,10 +45,8 @@ const errorHandler = (error: ResponseError) => {
   const { status } = error.response
   const code = status as CodeMessageKey
   if (code === 403) {
-    removeToken()
     history.push('/403')
   } else if (code <= 504 && code >= 500) {
-    removeToken()
     history.push('/500')
   } else if (code >= 404 && code < 422) {
     history.push('/404')

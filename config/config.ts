@@ -1,6 +1,13 @@
 import { defineConfig } from 'umi'
 import routes from './routes'
 export default defineConfig({
+  define: {
+    'process.env': {
+      NODE_ENV: 'development',
+      baseUrl: 'http://localhost:8080' // 后端地址
+      // baseUrl: 'http://localhost:8000' // mock 地址
+    }
+  },
   favicon: '/favicon.svg',
   dva: {
     immer: true, // 启用 immer 以方便修改 reducer

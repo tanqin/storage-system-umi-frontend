@@ -5,7 +5,6 @@
 import { extend } from 'umi-request'
 import { notification, Modal } from 'antd'
 import { getToken, removeToken } from './auth'
-import sysConfig from './sysConfig'
 import { history } from 'umi'
 import { ResultType } from '@/pages/User/Register/service'
 import type { ResponseError } from 'umi-request'
@@ -68,8 +67,8 @@ request.interceptors.request.use((url, options) => {
   const headers = {
     'Content-Type': 'application/json;charset=utf-8'
   }
-  const env = process.env.NODE_ENV as 'development' | 'production'
-  const baseurl = sysConfig[env].baseUrl + url
+
+  const baseurl = process.env.baseUrl + url
   const optionsHeaders = options.headers as { [key: string]: string }
 
   if (token) {

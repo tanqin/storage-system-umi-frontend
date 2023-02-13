@@ -15,12 +15,28 @@ export function getInitialState(): InitialState {
   }
 }
 
-// 退出登录
 export const layout = {
+  // 退出登录
   logout: (initialState: InitialState) => {
     // console.log(initialState)
     removeToken()
     history.push('/user/login')
+  },
+  // 底部
+  footerRender: () => {
+    return (
+      <p
+        style={{
+          height: '40px',
+          lineHeight: '40px',
+          marginBottom: 0,
+          textAlign: 'center',
+          fontSize: '18px'
+        }}
+      >
+        MIT Licensed | Copyright © 2023-present tanqin
+      </p>
+    )
   }
 }
 

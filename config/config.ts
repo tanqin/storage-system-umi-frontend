@@ -24,7 +24,7 @@ export default defineConfig({
     title: '仓库管理系统',
     logo: '/favicon.svg',
     locale: 'zh-CN',
-    contentStyle: { padding: '20px' }, // layout 的内容区 style
+    contentStyle: { padding: '20px', height: 'calc(100vh - 48px - 40px)' }, // layout 的内容区 style
     siderWidth: 194
   },
   routes,

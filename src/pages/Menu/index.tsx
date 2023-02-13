@@ -1,7 +1,9 @@
+import IconFont from '@/components/IconFont'
+import RoleTag from '@/components/RoleTag'
 import { SearchOutlined } from '@ant-design/icons'
 import { Button, Form, Input, Select, Space, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { IRoute } from 'umi'
 import { getMenuListAPI } from './service'
 
@@ -31,7 +33,7 @@ export default function Menu() {
       pid: 0,
       name: '首页',
       path: '/index',
-      icon: 'icon-data',
+      icon: 'icon-database',
       component: './pages',
       level: 0,
       roleIds: '0,1,2'
@@ -109,7 +111,8 @@ export default function Menu() {
     {
       title: '图标',
       dataIndex: 'icon',
-      align: 'center'
+      align: 'center',
+      render: (icon, row) => <IconFont type={icon} style={{ fontSize: 20 }} />
     },
     {
       title: '组件路径',
@@ -124,7 +127,13 @@ export default function Menu() {
     {
       title: '授权角色',
       dataIndex: 'roleIds',
-      align: 'center'
+      align: 'left',
+      width: 260,
+      render: (roleIds: string, row) => {
+        return roleIds
+          .split(',')
+          .map((roleId) => <RoleTag roleId={parseInt(roleId)} />)
+      }
     },
     {
       title: '操作',

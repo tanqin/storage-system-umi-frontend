@@ -20,6 +20,7 @@ export interface User {
   sex: number | null | undefined
   phone: string
   roleId: number
+  isValid: boolean
 }
 
 export async function getUserListAPI<T>(params: PageQueryParams) {

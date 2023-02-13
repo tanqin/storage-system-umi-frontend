@@ -98,7 +98,7 @@ request.interceptors.response.use(async (response, options) => {
     const { code, message } = res
     const errorText = codeMessage[code || status] || message
     // debugger
-    if (code === 401) {
+    if (code === 401 && status === 401) {
       Modal.confirm({
         title: '系统提示',
         content: '登录状态已过期，您可以继续留在该页面，或者重新登录？',

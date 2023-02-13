@@ -344,6 +344,22 @@ export default function Menu() {
                         {
                           value: 'icon-gold',
                           label: 'gold'
+                        },
+                        {
+                          value: 'icon-tag',
+                          label: 'tag'
+                        },
+                        {
+                          value: 'icon-team',
+                          label: 'team'
+                        },
+                        {
+                          value: 'icon-menu',
+                          label: 'menu'
+                        },
+                        {
+                          value: 'icon-book',
+                          label: 'book'
                         }
                       ].map((item) => (
                         <Select.Option
@@ -361,7 +377,10 @@ export default function Menu() {
                     label={
                       <>
                         路由地址
-                        <span hidden={type.current === 'add'}>
+                        <span
+                          hidden={type.current === 'add'}
+                          style={{ marginLeft: '2px' }}
+                        >
                           <Tooltip
                             destroyTooltipOnHide
                             title="谨慎更改！"
@@ -386,7 +405,10 @@ export default function Menu() {
                     label={
                       <>
                         组件路径
-                        <span hidden={type.current === 'add'}>
+                        <span
+                          hidden={type.current === 'add'}
+                          style={{ marginLeft: '2px' }}
+                        >
                           <Tooltip
                             title="谨慎更改！"
                             color="orange"

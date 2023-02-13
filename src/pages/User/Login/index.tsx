@@ -23,7 +23,7 @@ const LoginForm = ({ state }: PropsType<User>) => {
         // })
         window.location.href = '/'
       } else {
-        message.error('用户名或密码错误！', 2)
+        message.error(res.message, 2)
       }
     })
   }

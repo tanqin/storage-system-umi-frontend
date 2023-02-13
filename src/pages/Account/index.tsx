@@ -9,6 +9,7 @@ import {
   Radio,
   Select,
   Space,
+  Switch,
   Table,
   Tag
 } from 'antd'
@@ -95,6 +96,61 @@ export default function Account() {
     })
   }
 
+  const data: User[] = userList
+
+  const [addOrEditUserForm] = Form.useForm<User>()
+  const [isAddOrEditModalOpen, setIsAddOrEditModalOpen] = useState(false)
+  const type = useRef('add')
+
+  // 新增或编辑用户模态框
+  const showAddOrEditModal = (row?: User) => {
+    type.current = 'add'
+    if (row) {
+      type.current = 'edit'
+      addOrEditUserForm.setFieldsValue(row)
+    }
+    setIsAddOrEditModalOpen(true)
+  }
+
+  // 新增或编辑用户信息
+  const handleAddOrEdit = async (user?: User) => {
+    let userInfo = user || addOrEditUserForm.getFieldsValue()
+    const res = await (type.current === 'add' && !user
+      ? registerAPI(userInfo)
+      : editUserAPI(userInfo))
+    if (res.code === 200) {
+      message.success(res.message, 2)
+      addOrEditUserForm.resetFields()
+      setIsAddOrEditModalOpen(false)
+      getUserList()
+    } else {
+      message.error(res.message)
+    }
+  }
+
+  const handleAddCancel = () => {
+    setIsAddOrEditModalOpen(false)
+  }
+
+  const handleClosed = () => {
+    addOrEditUserForm.resetFields()
+  }
+
+  // 分页
+  const onPagination = (pageNum: number, pageSize: number) => {
+    setSearchParams({
+      ...searchParams,
+      pageNum,
+      pageSize
+    })
+  }
+
+  // 修改账号状态
+  const onChangeValid = (checked: boolean, row: User) => {
+    row.isValid = checked
+    handleAddOrEdit(row)
+  }
+
   const columns: ColumnsType<User> = [
     {
       title: '用户编号',
@@ -150,6 +206,23 @@ export default function Account() {
       align: 'center'
     },
     {
+      title: '账号状态',
+      dataIndex: 'isValid',
+      align: 'center',
+      render: (isValid: boolean, row) => {
+        return (
+          <Switch
+            disabled={row.roleId === 0}
+            key={row.id}
+            checkedChildren="有效"
+            unCheckedChildren="无效"
+            checked={isValid}
+            onChange={(checked) => onChangeValid(checked, row)}
+          />
+        )
+      }
+    },
+    {
       title: '操作',
       dataIndex: 'operation',
       render: (_, row) => (
@@ -161,7 +234,7 @@ export default function Account() {
             danger
             type="primary"
             hidden={row.roleId === 0}
-            onClick={() => onDeleteUser(row.id)}
+            onClick={() => onDeleteUser(row.id!)}
           >
             删除
           </Button>
@@ -170,54 +243,6 @@ export default function Account() {
       align: 'center'
     }
   ]
-
-  const data: User[] = userList
-
-  const [addOrEditUserForm] = Form.useForm<User>()
-  const [isAddOrEditModalOpen, setIsAddOrEditModalOpen] = useState(false)
-  const type = useRef('add')
-
-  // 新增或编辑用户模态框
-  const showAddOrEditModal = (row?: User) => {
-    type.current = 'add'
-    if (row) {
-      type.current = 'edit'
-      addOrEditUserForm.setFieldsValue(row)
-    }
-    setIsAddOrEditModalOpen(true)
-  }
-
-  const handleAddOrEditOk = async () => {
-    const userInfo = addOrEditUserForm.getFieldsValue()
-    const res = await (type.current === 'add'
-      ? registerAPI(userInfo)
-      : editUserAPI(userInfo))
-    if (res.code === 200) {
-      message.success(res.message, 2)
-      addOrEditUserForm.resetFields()
-      setIsAddOrEditModalOpen(false)
-      getUserList()
-    } else {
-      message.error(res.message)
-    }
-  }
-
-  const handleAddCancel = () => {
-    setIsAddOrEditModalOpen(false)
-  }
-
-  const handleClosed = () => {
-    addOrEditUserForm.resetFields()
-  }
-
-  // 分页
-  const onChange = (pageNum: number, pageSize: number) => {
-    setSearchParams({
-      ...searchParams,
-      pageNum,
-      pageSize
-    })
-  }
 
   return (
     <div>
@@ -288,7 +313,7 @@ export default function Account() {
               <Modal
                 title={type.current === 'add' ? '新增用户' : '编辑用户'}
                 open={isAddOrEditModalOpen}
-                onOk={handleAddOrEditOk}
+                onOk={() => handleAddOrEdit()}
                 onCancel={handleAddCancel}
                 afterClose={handleClosed}
                 forceRender={true}
@@ -399,6 +424,13 @@ export default function Account() {
                       ]}
                     />
                   </Form.Item>
+                  <Form.Item
+                    label="账号状态"
+                    name="isValid"
+                    valuePropName="checked"
+                  >
+                    <Switch checkedChildren="有效" unCheckedChildren="无效" />
+                  </Form.Item>
                 </Form>
               </Modal>
             </Space>
@@ -417,7 +449,7 @@ export default function Account() {
           showTotal: (total) => `总 ${total} 条`,
           defaultPageSize: 10,
           defaultCurrent: 1,
-          onChange: onChange
+          onChange: onPagination
         }}
       />
     </div>

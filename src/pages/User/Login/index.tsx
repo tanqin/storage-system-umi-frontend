@@ -2,7 +2,7 @@ import styles from './index.less'
 import { Form, Input, Button, Checkbox, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { loginAPI, LoginParams } from './service'
-import { history, IRouteComponentProps, Link, Location, useModel } from 'umi'
+import { IRouteComponentProps, Link, Location } from 'umi'
 import { setToken } from '@/utils/auth'
 import { ReactNode } from 'react'
 import { User } from '@/pages/Account/service'
@@ -17,9 +17,11 @@ const LoginForm = ({ state }: PropsType<User>) => {
       if (res.code === 200 && res.data?.token) {
         setToken(res.data.token)
         message.success('登录成功！', 1)
-        history.push({
-          pathname: '/'
-        })
+        // history.replace() 由于不会刷新页面，所以没法触发运行时配置中的 render() 去重新获取路由，暂时改为 window.location.href
+        // history.replace({
+        //   pathname: '/'
+        // })
+        window.location.href = '/'
       } else {
         message.error('用户名或密码错误！', 2)
       }

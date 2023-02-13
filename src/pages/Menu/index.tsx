@@ -54,8 +54,6 @@ export default function Menu() {
 
   // 搜索
   const onSearch = (values: { queryString: string; roleIdsArr: string[] }) => {
-    console.log(values.roleIdsArr)
-
     setSearchParams({
       ...searchParams,
       params: {
@@ -162,7 +160,7 @@ export default function Menu() {
           <Form.Item name="queryString">
             <Input
               placeholder="菜单名称/路径/组件路径"
-              style={{ width: 180 }}
+              style={{ width: 200 }}
               prefix={<SearchOutlined />}
             />
           </Form.Item>

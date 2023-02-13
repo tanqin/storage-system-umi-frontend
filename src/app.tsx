@@ -1,7 +1,7 @@
 import { history } from 'umi'
+import IconFont from './components/IconFont'
 import { getMenuAuthAPI } from './pages/Menu/service'
 import { getToken, removeToken } from './utils/auth'
-import { createFromIconfontCN } from '@ant-design/icons'
 export type InitialState = {
   name: string
   avatar: string
@@ -24,11 +24,8 @@ export const layout = {
   }
 }
 
-// 权限动态路由
+// 权限路由
 let authRoutes: Array<any> = []
-const IconFont = createFromIconfontCN({
-  scriptUrl: '//at.alicdn.com/t/c/font_3892069_b5k8lymbe56.js'
-})
 
 // 拼接菜单
 function parseRoutes(authRoutes: any[]) {

@@ -3,9 +3,9 @@ import { ResultType } from '../User/Register/service'
 
 export interface IKind {
   id?: number
+  storageId?: number
   name?: string
   remark?: string
-  storageId?: string
   isValid?: boolean
 }
 

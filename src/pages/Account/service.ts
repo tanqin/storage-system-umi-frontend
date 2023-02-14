@@ -1,18 +1,8 @@
 import request from '@/utils/request'
 import { ResultType } from '../User/Register/service'
 
-export interface PageQueryParams {
-  pageNum?: number
-  pageSize?: number
-  params?: {
-    roleId?: number
-    sex?: number
-    queryString?: string
-  }
-}
-
 export interface User {
-  id: number
+  id?: number
   username: string
   password?: string
   nickname: string
@@ -23,22 +13,37 @@ export interface User {
   isValid: boolean
 }
 
-export async function getUserListAPI<T>(params: PageQueryParams) {
-  return request<ResultType<T>>('/user/pageList', {
+/**
+ * 获取用户列表（含分页、搜索）
+ * @param params 分页查询参数
+ * @returns
+ */
+export async function getUserListAPI<P>(params: IPageQuery<P>) {
+  return request<ResultType<User[]>>('/user/pageList', {
     method: 'POST',
     data: params
   })
 }
 
-export async function editUserAPI<T>(user: User) {
-  return request<ResultType<T>>('/user/update', {
+/**
+ * 编辑用户信息
+ * @param user 用户信息
+ * @returns
+ */
+export async function editUserAPI(user: User) {
+  return request<ResultType>('/user/update', {
     method: 'PUT',
     data: user
   })
 }
 
-export async function deleteUserAPI<T>(id: number) {
-  return request<ResultType<T>>(`/user/delete/${id}`, {
+/**
+ * 根据 id 删除用户
+ * @param id 用户 id
+ * @returns
+ */
+export async function deleteUserAPI(id: number) {
+  return request<ResultType>(`/user/delete/${id}`, {
     method: 'DELETE'
   })
 }

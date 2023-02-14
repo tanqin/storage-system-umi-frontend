@@ -2,39 +2,40 @@ import { ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Form, Input, message, Modal, Space, Switch, Table } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useEffect, useRef, useState } from 'react'
-import { deleteStorageAPI, addOrEditStorageAPI, getStorageListAPI, IStorage, IPageQuery } from './service'
+import { deleteStorageAPI, addOrEditStorageAPI, getStorageListAPI, IStorage } from './service'
 
 type SearchParams = {
   queryString?: string
+}
+
+const initialPageQuery = {
+  pageNum: 1,
+  pageSize: 10,
+  params: {}
 }
 
 export default function Storage() {
   const [storageList, setStorageList] = useState<IStorage[]>([])
   const [total, setTotal] = useState(0)
   const [searchForm] = Form.useForm()
-  const initialSearchParams = {
-    pageNum: 1,
-    pageSize: 10,
-    params: {}
-  }
 
-  const [searchParams, setSearchParams] = useState<IPageQuery<SearchParams>>(initialSearchParams)
+  const [pageQuery, setPageQuery] = useState<IPageQuery<SearchParams>>(initialPageQuery)
 
   // 获取仓库列表
   const getStorageList = async () => {
-    const { data, total } = await getStorageListAPI<SearchParams>(searchParams)
+    const { data, total } = await getStorageListAPI<SearchParams>(pageQuery)
     setStorageList(data || [])
     setTotal(total || 0)
   }
 
   useEffect(() => {
     getStorageList()
-  }, [searchParams])
+  }, [pageQuery])
 
   // 设置查询参数
-  const handleSearch = (values: { queryString: string }) => {
-    setSearchParams({
-      ...searchParams,
+  const handleSearch = (values: SearchParams) => {
+    setPageQuery({
+      ...pageQuery,
       params: {
         queryString: values.queryString
       }
@@ -44,7 +45,7 @@ export default function Storage() {
   // 重置查询参数
   const handleReset = () => {
     searchForm.resetFields()
-    setSearchParams(initialSearchParams)
+    setPageQuery(initialPageQuery)
   }
 
   // 删除仓库
@@ -104,8 +105,8 @@ export default function Storage() {
 
   // 分页
   const onPagination = (pageNum: number, pageSize: number) => {
-    setSearchParams({
-      ...searchParams,
+    setPageQuery({
+      ...pageQuery,
       pageNum,
       pageSize
     })

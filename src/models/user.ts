@@ -4,18 +4,18 @@ import { ResultType } from '@/pages/User/Register/service'
 import { getToken } from '@/utils/auth'
 import { Effect, ImmerReducer, Subscription } from 'umi'
 
-export interface ModelState {
+export interface UserModelState {
   userInfo: User | {}
 }
 
 export interface ModelType {
   namespace?: string
-  state: ModelState
+  state: UserModelState
   effects: {
     getUserInfo: Effect
   }
   reducers: {
-    saveUserInfo: ImmerReducer<ModelState>
+    saveUserInfo: ImmerReducer<UserModelState>
   }
   subscriptions: { setup: Subscription }
 }

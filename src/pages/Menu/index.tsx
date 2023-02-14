@@ -7,28 +7,28 @@ import { useEffect, useRef, useState } from 'react'
 import { IRoute } from 'umi'
 import { addOrEditMenuAPI, deleteMenuAPI, getMenuListAPI } from './service'
 
+// 查询参数
 type SearchParams = {
-  pageNum: number
-  pageSize: number
-  params: {
-    queryString?: string
-    roleIds?: string
-  }
+  queryString?: string
+  roleIds?: string
+}
+
+const initialPageQuery = {
+  pageNum: 1,
+  pageSize: 10,
+  params: {}
 }
 
 export default function Menu() {
   const [searchForm] = Form.useForm()
   const [menuList, setMenuList] = useState<IRoute[]>([])
   const [total, setTotal] = useState(0)
-  const [searchParams, setSearchParams] = useState<SearchParams>({
-    pageNum: 1,
-    pageSize: 10,
-    params: {}
-  })
+  // 分页查询参数
+  const [pageQuery, setPageQuery] = useState<IPageQuery<SearchParams>>(initialPageQuery)
 
   // 获取菜单列表
   const getMenuList = async () => {
-    const { data: menuList = [], total } = await getMenuListAPI(searchParams)
+    const { data: menuList = [], total } = await getMenuListAPI<SearchParams>(pageQuery)
     menuList.forEach((item) => {
       item.roleIds = item.roleIds.split(',')
     })
@@ -49,12 +49,12 @@ export default function Menu() {
 
   useEffect(() => {
     getMenuList()
-  }, [searchParams])
+  }, [pageQuery])
 
   // 分页
   const onPagination = (pageNum: number, pageSize: number) => {
-    setSearchParams({
-      ...searchParams,
+    setPageQuery({
+      ...pageQuery,
       pageNum,
       pageSize
     })
@@ -62,8 +62,8 @@ export default function Menu() {
 
   // 搜索
   const onSearch = (values: { queryString: string; roleIdsArr: string[] }) => {
-    setSearchParams({
-      ...searchParams,
+    setPageQuery({
+      ...pageQuery,
       params: {
         queryString: values.queryString,
         roleIds: values.roleIdsArr?.sort((a, b) => parseInt(a) - parseInt(b)).toString()
@@ -73,11 +73,7 @@ export default function Menu() {
 
   // 重置搜索参数
   const handleReset = () => {
-    setSearchParams({
-      pageNum: 1,
-      pageSize: 10,
-      params: {}
-    })
+    setPageQuery(initialPageQuery)
     searchForm.resetFields()
   }
 

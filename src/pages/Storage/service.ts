@@ -1,12 +1,6 @@
 import request from '@/utils/request'
 import { ResultType } from '../User/Register/service'
 
-export interface IPageQuery<T = {}> {
-  pageNum?: number
-  pageSize?: number
-  params?: T
-}
-
 export interface IStorage {
   id?: number
   name?: string

@@ -7,44 +7,43 @@ import { deleteUserAPI, editUserAPI, getUserListAPI, User } from './service'
 import RoleTag from '@/components/RoleTag'
 import { useSelector } from 'umi'
 
-type SearchParams = {
-  pageNum: number
-  pageSize: number
-  params: {
-    queryString?: string
-    sex?: number
-    roleId?: number
-  }
+type PageQuery = {
+  queryString?: string
+  sex?: number
+  roleId?: number
+}
+
+const initialPageQuery = {
+  pageNum: 1,
+  pageSize: 10,
+  params: {}
 }
 
 export default function Account() {
-  const [searchForm] = Form.useForm()
   const [userList, setUserList] = useState<User[]>([])
+  const [total, setTotal] = useState(0)
   const {
     userInfo: { roleId }
   } = useSelector((state: any) => state.user)
 
-  const [searchParams, setSearchParams] = useState<SearchParams>({
-    pageNum: 1,
-    pageSize: 10,
-    params: {}
-  })
+  const [searchForm] = Form.useForm()
+  const [pageQuery, setPageQuery] = useState<IPageQuery<PageQuery>>(initialPageQuery)
 
-  const [total, setTotal] = useState(0)
+  // 获取用户列表
   const getUserList = async () => {
-    const res = await getUserListAPI<User[]>(searchParams)
-    setUserList(res?.data || [])
-    setTotal(res?.total || 0)
+    const { data, total } = await getUserListAPI<PageQuery>(pageQuery)
+    setUserList(data || [])
+    setTotal(total || 0)
   }
 
   useEffect(() => {
     getUserList()
-  }, [searchParams])
+  }, [pageQuery])
 
-  // 查询用户列表
-  const onSearch = (values: { queryString: string; sex: number; roleId: number }) => {
-    setSearchParams({
-      ...searchParams,
+  // 设置查询参数
+  const handleSearch = (values: PageQuery) => {
+    setPageQuery({
+      ...pageQuery,
       params: {
         queryString: values.queryString,
         sex: values.sex,
@@ -55,16 +54,12 @@ export default function Account() {
 
   // 重置查询参数
   const handleReset = () => {
-    setSearchParams({
-      pageNum: 1,
-      pageSize: 10,
-      params: {}
-    })
+    setPageQuery(initialPageQuery)
     searchForm.resetFields()
   }
 
   // 删除用户
-  const onDeleteUser = (id: number) => {
+  const handleDeleteUser = (id: number) => {
     Modal.confirm({
       title: '删除提示',
       icon: <ExclamationCircleOutlined />,
@@ -79,9 +74,7 @@ export default function Account() {
     })
   }
 
-  const data: User[] = userList
-
-  const [addOrEditUserForm] = Form.useForm<User>()
+  const [addOrEditForm] = Form.useForm<User>()
   const [isAddOrEditModalOpen, setIsAddOrEditModalOpen] = useState(false)
   const type = useRef('add')
 
@@ -90,18 +83,18 @@ export default function Account() {
     type.current = 'add'
     if (row) {
       type.current = 'edit'
-      addOrEditUserForm.setFieldsValue(row)
+      addOrEditForm.setFieldsValue(row)
     }
     setIsAddOrEditModalOpen(true)
   }
 
   // 新增或编辑用户信息
-  const handleAddOrEdit = async (user?: User) => {
-    let userInfo = user || addOrEditUserForm.getFieldsValue()
-    const res = await (type.current === 'add' && !user ? registerAPI(userInfo) : editUserAPI(userInfo))
+  const handleAddOrEdit = async () => {
+    let userInfo = addOrEditForm.getFieldsValue()
+    const res = await (type.current === 'add' ? registerAPI(userInfo) : editUserAPI(userInfo))
     if (res.code === 200) {
       message.success(res.message, 2)
-      addOrEditUserForm.resetFields()
+      addOrEditForm.resetFields()
       setIsAddOrEditModalOpen(false)
       getUserList()
     } else {
@@ -109,18 +102,20 @@ export default function Account() {
     }
   }
 
-  const handleAddCancel = () => {
+  // 取消新增或编辑用户信息
+  const handleAddOrEditCancel = () => {
     setIsAddOrEditModalOpen(false)
   }
 
+  // 关闭模态框
   const handleClosed = () => {
-    addOrEditUserForm.resetFields()
+    addOrEditForm.resetFields()
   }
 
   // 分页
   const onPagination = (pageNum: number, pageSize: number) => {
-    setSearchParams({
-      ...searchParams,
+    setPageQuery({
+      ...pageQuery,
       pageNum,
       pageSize
     })
@@ -129,9 +124,11 @@ export default function Account() {
   // 修改账号状态
   const onChangeValid = (checked: boolean, row: User) => {
     row.isValid = checked
-    handleAddOrEdit(row)
+    addOrEditForm.setFieldsValue(row)
+    handleAddOrEdit()
   }
 
+  // 表格列配置
   const columns: ColumnsType<User> = [
     {
       title: '用户编号',
@@ -204,7 +201,7 @@ export default function Account() {
           <Button type="primary" onClick={() => showAddOrEditModal(row)}>
             编辑
           </Button>
-          <Button danger type="primary" hidden={row.roleId === 0} onClick={() => onDeleteUser(row.id!)}>
+          <Button danger type="primary" hidden={row.roleId === 0} onClick={() => handleDeleteUser(row.id!)}>
             删除
           </Button>
         </Space>
@@ -217,7 +214,7 @@ export default function Account() {
     <div>
       {/* 搜索栏 */}
       <div className="search-bar">
-        <Form name="search-form" form={searchForm} layout="inline" onFinish={onSearch}>
+        <Form name="search-form" form={searchForm} layout="inline" onFinish={handleSearch}>
           <Form.Item name="queryString">
             <Input placeholder="用户名/昵称/手机号" style={{ width: 180 }} prefix={<SearchOutlined />} />
           </Form.Item>
@@ -273,19 +270,18 @@ export default function Account() {
               <Modal
                 title={type.current === 'add' ? '新增用户' : '编辑用户'}
                 open={isAddOrEditModalOpen}
-                onOk={() => handleAddOrEdit()}
-                onCancel={handleAddCancel}
+                onOk={handleAddOrEdit}
+                onCancel={handleAddOrEditCancel}
                 afterClose={handleClosed}
                 forceRender={true}
               >
                 <Form
                   name="add-or-edit-user-form"
-                  form={addOrEditUserForm}
+                  form={addOrEditForm}
                   labelCol={{ span: 4 }}
                   wrapperCol={{ span: 20 }}
-                  // onFinish={onFinish}
                   autoComplete="off"
-                  initialValues={{ sex: 2, roleId: 2 }}
+                  initialValues={{ sex: 2, roleId: 2, isValid: true }}
                 >
                   <Form.Item name="id" hidden>
                     <Input />
@@ -366,7 +362,7 @@ export default function Account() {
                   <Form.Item label="角色" name="roleId" hidden={roleId !== 0}>
                     <Select
                       placeholder="请选择角色"
-                      disabled={addOrEditUserForm.getFieldValue('roleId') === 0}
+                      disabled={addOrEditForm.getFieldValue('roleId') === 0}
                       options={[
                         {
                           value: 0,
@@ -393,9 +389,10 @@ export default function Account() {
           </Form.Item>
         </Form>
       </div>
+      {/* 表格 */}
       <Table
         columns={columns}
-        dataSource={data}
+        dataSource={userList}
         rowKey="id"
         scroll={{ y: 660 }}
         pagination={{

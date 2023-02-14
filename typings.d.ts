@@ -6,3 +6,9 @@ declare module '*.svg' {
   const url: string
   export default url
 }
+
+declare interface IPageQuery<T = {}> {
+  pageNum?: number
+  pageSize?: number
+  params?: T
+}

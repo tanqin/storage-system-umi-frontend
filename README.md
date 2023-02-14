@@ -1,4 +1,6 @@
-# 仓库管理系统 umi 版
+# storage-system-umi-frontend
+
+项目为『仓库管理系统』前端 umi 版。后端地址: [storage-system-umi-backend](https://github.com/tanqin/storage-system-umi-backend)
 
 ## 使用说明
 

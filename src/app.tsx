@@ -55,16 +55,17 @@ function parseRoutes(authRoutes: any[]) {
     }))
   }
 }
-// 修改路由
+// 修改路由，如：增加权限路由
 export function patchRoutes({ routes }: { routes: Array<any> }) {
   parseRoutes(authRoutes)?.forEach((item) => {
     routes[0].routes[1].routes.splice(-2, 0, item)
   })
 }
 
-// 渲染路由
+// 运行时渲染函数
 export function render(oldRender: any) {
   // 将 oldRender 存为 window 变量，才能在登陆后重新获取路由。参考：https://github.com/umijs/umi/issues/2511
+
   if (getToken()) {
     getMenuAuthAPI().then((res) => {
       authRoutes = (res?.data || []) as Array<any>

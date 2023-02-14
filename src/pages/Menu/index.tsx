@@ -23,6 +23,15 @@ import { useEffect, useRef, useState } from 'react'
 import { IRoute } from 'umi'
 import { addOrEditMenuAPI, deleteMenuAPI, getMenuListAPI } from './service'
 
+type SearchParams = {
+  pageNum: number
+  pageSize: number
+  params: {
+    queryString?: string
+    roleIds?: string
+  }
+}
+
 export default function Menu() {
   const [searchForm] = Form.useForm()
   const [menuList, setMenuList] = useState<IRoute[]>([])
@@ -32,15 +41,6 @@ export default function Menu() {
     pageSize: 10,
     params: {}
   })
-
-  type SearchParams = {
-    pageNum: number
-    pageSize: number
-    params: {
-      queryString?: string
-      roleIds?: string
-    }
-  }
 
   // 获取菜单列表
   const getMenuList = async () => {
@@ -62,6 +62,7 @@ export default function Menu() {
     setMenuList(JSON.parse(JSON.stringify(menuList)))
     setTotal(total || 0)
   }
+
   useEffect(() => {
     getMenuList()
   }, [searchParams])
@@ -290,6 +291,7 @@ export default function Menu() {
         setIconList(iconList)
       })
   }
+
   useEffect(() => {
     getIconList()
   }, [])

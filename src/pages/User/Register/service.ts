@@ -4,7 +4,7 @@ import request, { CodeMessageKey } from '@/utils/request'
 export interface ResultType<T = null> {
   code: CodeMessageKey
   message: string
-  total?: number | null
+  total?: number
   data?: T
 }
 

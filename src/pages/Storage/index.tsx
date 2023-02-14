@@ -2,13 +2,11 @@ import { ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Form, Input, message, Modal, Space, Switch, Table } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useEffect, useRef, useState } from 'react'
-import {
-  deleteStorageAPI,
-  addOrEditStorageAPI,
-  getStorageListAPI,
-  IStorage,
-  IPageQuery
-} from './service'
+import { deleteStorageAPI, addOrEditStorageAPI, getStorageListAPI, IStorage, IPageQuery } from './service'
+
+type SearchParams = {
+  queryString?: string
+}
 
 export default function Storage() {
   const [storageList, setStorageList] = useState<IStorage[]>([])
@@ -19,12 +17,12 @@ export default function Storage() {
     pageSize: 10,
     params: {}
   }
-  const [searchParams, setSearchParams] =
-    useState<IPageQuery>(initialSearchParams)
+
+  const [searchParams, setSearchParams] = useState<IPageQuery<SearchParams>>(initialSearchParams)
 
   // 获取仓库列表
   const getStorageList = async () => {
-    const { data, total } = await getStorageListAPI(searchParams)
+    const { data, total } = await getStorageListAPI<SearchParams>(searchParams)
     setStorageList(data || [])
     setTotal(total || 0)
   }
@@ -131,11 +129,7 @@ export default function Storage() {
       title: '仓库名称',
       dataIndex: 'name',
       render: (name, row) => (
-        <Button
-          type="link"
-          key={row.id}
-          onClick={() => showAddOrEditModal(row)}
-        >
+        <Button type="link" key={row.id} onClick={() => showAddOrEditModal(row)}>
           {name}
         </Button>
       ),
@@ -181,11 +175,7 @@ export default function Storage() {
           <Button type="primary" onClick={() => showAddOrEditModal(row)}>
             编辑
           </Button>
-          <Button
-            danger
-            type="primary"
-            onClick={() => onDeleteStorage(row.id!)}
-          >
+          <Button danger type="primary" onClick={() => onDeleteStorage(row.id!)}>
             删除
           </Button>
         </Space>
@@ -198,18 +188,9 @@ export default function Storage() {
     <div>
       {/* 搜索栏 */}
       <div className="search-bar">
-        <Form
-          name="search-form"
-          form={searchForm}
-          layout="inline"
-          onFinish={handleSearch}
-        >
+        <Form name="search-form" form={searchForm} layout="inline" onFinish={handleSearch}>
           <Form.Item name="queryString">
-            <Input
-              placeholder="仓库名称/备注"
-              style={{ width: 180 }}
-              prefix={<SearchOutlined />}
-            />
+            <Input placeholder="仓库名称/备注" style={{ width: 180 }} prefix={<SearchOutlined />} />
           </Form.Item>
           <Form.Item>
             <Space>
@@ -237,25 +218,13 @@ export default function Storage() {
                   <Form.Item name="id" hidden>
                     <Input />
                   </Form.Item>
-                  <Form.Item
-                    label="仓库名称"
-                    name="name"
-                    rules={[{ required: true, message: '请输入仓库名称!' }]}
-                  >
+                  <Form.Item label="仓库名称" name="name" rules={[{ required: true, message: '请输入仓库名称!' }]}>
                     <Input />
                   </Form.Item>
                   <Form.Item label="备注" name="remark">
-                    <Input.TextArea
-                      showCount
-                      maxLength={128}
-                      style={{ height: 120, resize: 'none' }}
-                    />
+                    <Input.TextArea showCount maxLength={128} style={{ height: 120, resize: 'none' }} />
                   </Form.Item>
-                  <Form.Item
-                    label="仓库状态"
-                    name="isValid"
-                    valuePropName="checked"
-                  >
+                  <Form.Item label="仓库状态" name="isValid" valuePropName="checked">
                     <Switch checkedChildren="开启" unCheckedChildren="关闭" />
                   </Form.Item>
                 </Form>
@@ -264,6 +233,7 @@ export default function Storage() {
           </Form.Item>
         </Form>
       </div>
+      {/* 表格 */}
       <Table
         columns={columns}
         dataSource={storageList}

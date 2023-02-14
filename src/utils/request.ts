@@ -50,6 +50,7 @@ const errorHandler = (error: ResponseError) => {
   } else if (code >= 404 && code < 422) {
     history.push('/404')
   }
+  Promise.reject('error')
 }
 
 /**

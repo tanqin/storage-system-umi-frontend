@@ -1,18 +1,5 @@
 import { ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons'
-import {
-  Button,
-  Form,
-  Input,
-  InputNumber,
-  message,
-  Modal,
-  Radio,
-  Select,
-  Space,
-  Switch,
-  Table,
-  Tag
-} from 'antd'
+import { Button, Form, Input, InputNumber, message, Modal, Radio, Select, Space, Switch, Table, Tag } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useEffect, useRef, useState } from 'react'
 import { registerAPI } from '../User/Register/service'
@@ -55,11 +42,7 @@ export default function Account() {
   }, [searchParams])
 
   // 查询用户列表
-  const onSearch = (values: {
-    queryString: string
-    sex: number
-    roleId: number
-  }) => {
+  const onSearch = (values: { queryString: string; sex: number; roleId: number }) => {
     setSearchParams({
       ...searchParams,
       params: {
@@ -115,9 +98,7 @@ export default function Account() {
   // 新增或编辑用户信息
   const handleAddOrEdit = async (user?: User) => {
     let userInfo = user || addOrEditUserForm.getFieldsValue()
-    const res = await (type.current === 'add' && !user
-      ? registerAPI(userInfo)
-      : editUserAPI(userInfo))
+    const res = await (type.current === 'add' && !user ? registerAPI(userInfo) : editUserAPI(userInfo))
     if (res.code === 200) {
       message.success(res.message, 2)
       addOrEditUserForm.resetFields()
@@ -161,11 +142,7 @@ export default function Account() {
       title: '账号',
       dataIndex: 'username',
       render: (username, row) => (
-        <Button
-          type="link"
-          key={row.id}
-          onClick={() => showAddOrEditModal(row)}
-        >
+        <Button type="link" key={row.id} onClick={() => showAddOrEditModal(row)}>
           {username}
         </Button>
       ),
@@ -185,10 +162,7 @@ export default function Account() {
       title: '性别',
       dataIndex: 'sex',
       render: (sex, row) => (
-        <Tag
-          color={sex === 0 ? 'pink' : sex === 1 ? 'blue' : 'grey'}
-          key={row.id}
-        >
+        <Tag color={sex === 0 ? 'pink' : sex === 1 ? 'blue' : 'grey'} key={row.id}>
           {sex === 0 ? '女' : sex === 1 ? '男' : '未知'}
         </Tag>
       ),
@@ -230,12 +204,7 @@ export default function Account() {
           <Button type="primary" onClick={() => showAddOrEditModal(row)}>
             编辑
           </Button>
-          <Button
-            danger
-            type="primary"
-            hidden={row.roleId === 0}
-            onClick={() => onDeleteUser(row.id!)}
-          >
+          <Button danger type="primary" hidden={row.roleId === 0} onClick={() => onDeleteUser(row.id!)}>
             删除
           </Button>
         </Space>
@@ -248,18 +217,9 @@ export default function Account() {
     <div>
       {/* 搜索栏 */}
       <div className="search-bar">
-        <Form
-          name="search-form"
-          form={searchForm}
-          layout="inline"
-          onFinish={onSearch}
-        >
+        <Form name="search-form" form={searchForm} layout="inline" onFinish={onSearch}>
           <Form.Item name="queryString">
-            <Input
-              placeholder="用户名/昵称/手机号"
-              style={{ width: 180 }}
-              prefix={<SearchOutlined />}
-            />
+            <Input placeholder="用户名/昵称/手机号" style={{ width: 180 }} prefix={<SearchOutlined />} />
           </Form.Item>
           <Form.Item name="sex">
             <Select
@@ -424,11 +384,7 @@ export default function Account() {
                       ]}
                     />
                   </Form.Item>
-                  <Form.Item
-                    label="账号状态"
-                    name="isValid"
-                    valuePropName="checked"
-                  >
+                  <Form.Item label="账号状态" name="isValid" valuePropName="checked">
                     <Switch checkedChildren="有效" unCheckedChildren="无效" />
                   </Form.Item>
                 </Form>

@@ -79,27 +79,24 @@ const UserRegister: FC = () => {
     return 'poor'
   }
 
-  const { loading: submitting, run: register } = useRequest<ResultType>(
-    registerAPI,
-    {
-      manual: true,
-      onSuccess: (res: ResultType, params: User[]) => {
-        // debugger
-        if (res.code === 200) {
-          message.success(res.message)
-          history.push({
-            pathname: '/user/login',
-            state: {
-              username: params[0].username,
-              password: params[0].password
-            }
-          })
-        } else {
-          message.error(res.message)
-        }
+  const { loading: submitting, run: register } = useRequest<ResultType>(registerAPI, {
+    manual: true,
+    onSuccess: (res: ResultType, params: User[]) => {
+      // debugger
+      if (res.code === 200) {
+        message.success(res.message)
+        history.push({
+          pathname: '/user/login',
+          state: {
+            username: params[0].username,
+            password: params[0].password
+          }
+        })
+      } else {
+        message.error(res.message)
       }
     }
-  )
+  })
   const onFinish = (values: Store) => {
     register(values)
   }
@@ -201,22 +198,14 @@ const UserRegister: FC = () => {
         >
           <FormItem
             name="password"
-            className={
-              form.getFieldValue('password') &&
-              form.getFieldValue('password').length > 0 &&
-              styles.password
-            }
+            className={form.getFieldValue('password') && form.getFieldValue('password').length > 0 && styles.password}
             rules={[
               {
                 validator: checkPassword
               }
             ]}
           >
-            <Input
-              size="large"
-              type="password"
-              placeholder="至少6位密码，区分大小写"
-            />
+            <Input size="large" type="password" placeholder="至少6位密码，区分大小写" />
           </FormItem>
         </Popover>
         <FormItem
@@ -234,12 +223,7 @@ const UserRegister: FC = () => {
           <Input size="large" type="password" placeholder="确认密码" />
         </FormItem>
         <InputGroup compact>
-          <Select
-            size="large"
-            value={prefix}
-            onChange={changePrefix}
-            style={{ width: '20%' }}
-          >
+          <Select size="large" value={prefix} onChange={changePrefix} style={{ width: '20%' }}>
             <Option value="86">+86</Option>
             <Option value="87">+87</Option>
           </Select>
@@ -282,13 +266,7 @@ const UserRegister: FC = () => {
           </Col>
         </Row> */}
         <FormItem>
-          <Button
-            size="large"
-            loading={submitting}
-            className={styles.submit}
-            type="primary"
-            htmlType="submit"
-          >
+          <Button size="large" loading={submitting} className={styles.submit} type="primary" htmlType="submit">
             <span>注册</span>
           </Button>
           <Link className={styles.login} to="/user/login">

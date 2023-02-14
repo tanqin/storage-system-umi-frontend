@@ -1,12 +1,10 @@
 import request from '@/utils/request'
 import { ResultType } from '../User/Register/service'
 
-export interface IPageQuery {
+export interface IPageQuery<T = {}> {
   pageNum?: number
   pageSize?: number
-  params?: {
-    queryString?: string
-  }
+  params?: T
 }
 
 export interface IStorage {
@@ -18,7 +16,7 @@ export interface IStorage {
   isValid?: boolean
 }
 
-export async function getStorageListAPI(params: IPageQuery) {
+export async function getStorageListAPI<P>(params: IPageQuery<P>) {
   return request<ResultType<IStorage[]>>('/storage/list', {
     method: 'POST',
     data: params

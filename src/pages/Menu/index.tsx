@@ -1,23 +1,7 @@
 import IconFont from '@/components/IconFont'
 import RoleTag from '@/components/RoleTag'
-import {
-  ExclamationCircleOutlined,
-  InfoCircleOutlined,
-  SearchOutlined
-} from '@ant-design/icons'
-import {
-  Button,
-  Form,
-  Input,
-  InputNumber,
-  message,
-  Modal,
-  Select,
-  Space,
-  Switch,
-  Table,
-  Tooltip
-} from 'antd'
+import { ExclamationCircleOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons'
+import { Button, Form, Input, InputNumber, message, Modal, Select, Space, Switch, Table, Tooltip } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { useEffect, useRef, useState } from 'react'
 import { IRoute } from 'umi'
@@ -82,9 +66,7 @@ export default function Menu() {
       ...searchParams,
       params: {
         queryString: values.queryString,
-        roleIds: values.roleIdsArr
-          ?.sort((a, b) => parseInt(a) - parseInt(b))
-          .toString()
+        roleIds: values.roleIdsArr?.sort((a, b) => parseInt(a) - parseInt(b)).toString()
       }
     })
   }
@@ -193,9 +175,7 @@ export default function Menu() {
       title: '图标',
       dataIndex: 'icon',
       align: 'center',
-      render: (icon, row) => (
-        <IconFont key={row.id} type={icon} style={{ fontSize: 20 }} />
-      )
+      render: (icon, row) => <IconFont key={row.id} type={icon} style={{ fontSize: 20 }} />
     },
     {
       title: '路由地址',
@@ -218,9 +198,7 @@ export default function Menu() {
       align: 'left',
       width: 260,
       render: (roleIds: string[], row) => {
-        return roleIds.map((roleId) => (
-          <RoleTag key={roleId} roleId={parseInt(roleId)} />
-        ))
+        return roleIds.map((roleId) => <RoleTag key={roleId} roleId={parseInt(roleId)} />)
       }
     },
     {
@@ -245,17 +223,10 @@ export default function Menu() {
       dataIndex: 'operation',
       render: (_, row) => (
         <Space hidden={row.id === -1} key={row.id}>
-          <Button
-            type="primary"
-            onClick={() => showAddOrEditModal(JSON.parse(JSON.stringify(row)))}
-          >
+          <Button type="primary" onClick={() => showAddOrEditModal(JSON.parse(JSON.stringify(row)))}>
             编辑
           </Button>
-          <Button
-            danger
-            type="primary"
-            onClick={() => handleDeleteMenu(row.id)}
-          >
+          <Button danger type="primary" onClick={() => handleDeleteMenu(row.id)}>
             删除
           </Button>
         </Space>
@@ -264,24 +235,16 @@ export default function Menu() {
     }
   ]
 
-  const [iconList, setIconList] = useState<{ value: string; label: string }[]>(
-    []
-  )
+  const [iconList, setIconList] = useState<{ value: string; label: string }[]>([])
 
   // 获取 iconfont 图标名称列表
   const getIconList = () => {
     fetch(process.env.iconScriptUrl as string)
       .then((res) => res.text())
       .then((res) => {
-        const sliceRes = res.slice(
-          res.indexOf(`<symbol id="`) + 10,
-          res.lastIndexOf(`" viewBox="`) + 10
-        )
+        const sliceRes = res.slice(res.indexOf(`<symbol id="`) + 10, res.lastIndexOf(`" viewBox="`) + 10)
         const iconList = sliceRes.split(`<symbol id="`).map((str) => {
-          const iconValue = str.slice(
-            str.indexOf('icon-'),
-            str.lastIndexOf(`" viewBox=`)
-          )
+          const iconValue = str.slice(str.indexOf('icon-'), str.lastIndexOf(`" viewBox=`))
           const iconLabel = iconValue.replace('icon-', '')
           return {
             value: iconValue,
@@ -300,18 +263,9 @@ export default function Menu() {
     <div>
       {/* 搜索栏 */}
       <div className="search-bar">
-        <Form
-          name="search-form"
-          form={searchForm}
-          layout="inline"
-          onFinish={onSearch}
-        >
+        <Form name="search-form" form={searchForm} layout="inline" onFinish={onSearch}>
           <Form.Item name="queryString">
-            <Input
-              placeholder="菜单名称/路径/组件路径"
-              style={{ width: 200 }}
-              prefix={<SearchOutlined />}
-            />
+            <Input placeholder="菜单名称/路径/组件路径" style={{ width: 200 }} prefix={<SearchOutlined />} />
           </Form.Item>
           <Form.Item name="roleIdsArr">
             <Select
@@ -377,11 +331,7 @@ export default function Menu() {
                     <Input />
                   </Form.Item>
                   <Form.Item label="图标" name="icon">
-                    <Select
-                      placeholder="请选择图标(可搜索)"
-                      optionLabelProp="label"
-                      showSearch
-                    >
+                    <Select placeholder="请选择图标(可搜索)" optionLabelProp="label" showSearch>
                       {iconList.map((item) => (
                         <Select.Option
                           key={item.value}
@@ -402,20 +352,9 @@ export default function Menu() {
                     label={
                       <>
                         路由地址
-                        <span
-                          hidden={type.current === 'add'}
-                          style={{ marginLeft: '2px' }}
-                        >
-                          <Tooltip
-                            destroyTooltipOnHide
-                            title="谨慎更改！"
-                            color="orange"
-                            placement="topRight"
-                          >
-                            <InfoCircleOutlined
-                              className="ml5"
-                              style={{ color: 'orange' }}
-                            />
+                        <span hidden={type.current === 'add'} style={{ marginLeft: '2px' }}>
+                          <Tooltip destroyTooltipOnHide title="谨慎更改！" color="orange" placement="topRight">
+                            <InfoCircleOutlined className="ml5" style={{ color: 'orange' }} />
                           </Tooltip>
                         </span>
                       </>
@@ -430,19 +369,9 @@ export default function Menu() {
                     label={
                       <>
                         组件路径
-                        <span
-                          hidden={type.current === 'add'}
-                          style={{ marginLeft: '2px' }}
-                        >
-                          <Tooltip
-                            title="谨慎更改！"
-                            color="orange"
-                            placement="topRight"
-                          >
-                            <InfoCircleOutlined
-                              className="ml5"
-                              style={{ color: 'orange' }}
-                            />
+                        <span hidden={type.current === 'add'} style={{ marginLeft: '2px' }}>
+                          <Tooltip title="谨慎更改！" color="orange" placement="topRight">
+                            <InfoCircleOutlined className="ml5" style={{ color: 'orange' }} />
                           </Tooltip>
                         </span>
                       </>
@@ -476,11 +405,7 @@ export default function Menu() {
                       ]}
                     />
                   </Form.Item>
-                  <Form.Item
-                    label="菜单状态"
-                    name="isValid"
-                    valuePropName="checked"
-                  >
+                  <Form.Item label="菜单状态" name="isValid" valuePropName="checked">
                     <Switch checkedChildren="开启" unCheckedChildren="关闭" />
                   </Form.Item>
                 </Form>

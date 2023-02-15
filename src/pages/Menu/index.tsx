@@ -290,12 +290,8 @@ export default function Menu() {
             <Input placeholder="菜单名称/路径/组件路径" style={{ width: 200 }} prefix={<SearchOutlined />} />
           </Form.Item>
           <Form.Item name="roleIdsArr">
-            <Select
-              placeholder="授权角色(支持多选)"
-              style={{ width: 300 }}
-              mode="multiple"
-              allowClear
-              options={[
+            <Select placeholder="授权角色(支持多选)" style={{ width: 350 }} mode="multiple" allowClear>
+              {[
                 {
                   value: '0',
                   label: '超级管理员'
@@ -306,10 +302,14 @@ export default function Menu() {
                 },
                 {
                   value: '2',
-                  label: '普通'
+                  label: '普通用户'
                 }
-              ]}
-            />
+              ].map((item) => (
+                <Select.Option key={item.value} value={item.value} label={<RoleTag roleId={item.value} />}>
+                  <RoleTag roleId={item.value} />
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
           <Form.Item>
             <Space>
@@ -405,7 +405,7 @@ export default function Menu() {
                     <Input />
                   </Form.Item>
                   <Form.Item label="排序级别" name="level">
-                    <InputNumber min={1} style={{ width: '30%' }} />
+                    <InputNumber min={1} style={{ width: '30%' }} precision={0} />
                   </Form.Item>
                   <Form.Item label="授权角色" name="roleIds">
                     <Select

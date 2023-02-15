@@ -1,24 +1,63 @@
-import styles from './index.less'
+import { ReactNode, useEffect, useState } from 'react'
 import { Form, Input, Button, Checkbox, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
-import { loginAPI } from './service'
 import { IRouteComponentProps, Link, Location } from 'umi'
+import Cookies from 'js-cookie'
+import { loginAPI } from './service'
 import { setToken } from '@/utils/auth'
-import { ReactNode } from 'react'
 import { User } from '@/pages/Account/service'
+import styles from './index.less'
+import { decrypt, encrypt } from '@/utils/encrypt'
 
 export interface PropsType<T = undefined> {
-  location?: Location
   children?: ReactNode
   state?: T
 }
 
 const LoginForm = ({ state }: PropsType<User>) => {
-  // debugger
-  const onLogin = (values: User) => {
+  const [form] = Form.useForm<User>()
+
+  // 设置默认用户信息
+  const setDefaultLoginUser = () => {
+    if (state?.username && state?.password) {
+      console.log('state')
+      // 从注册页注册成功后跳转至登录页，从 state 中获取账号密码填充
+      form.setFieldsValue({ username: state?.username, password: state?.password, rememberMe: true })
+    } else {
+      // 其他情况，冲 cookie 中获取账号密码
+      console.log('cookie')
+      const username = Cookies.get('username')!
+      const password = decrypt(Cookies.get('password')!)
+      const rememberMe = Cookies.get('rememberMe')
+      if (password) {
+        form.setFieldsValue({ username, password, rememberMe: Boolean(rememberMe) })
+      }
+    }
+  }
+
+  useEffect(() => {
+    setDefaultLoginUser()
+  }, [])
+
+  // 登录
+  const handleLogin = (loginUser: User) => {
+    const { username, password, rememberMe } = loginUser
+    if (rememberMe) {
+      // 有效期 30 天
+      const expires = 30
+      // 密码加密
+      const encryptPassword = encrypt(password!) as string
+      Cookies.set('username', username, { expires })
+      Cookies.set('password', encryptPassword, { expires })
+      Cookies.set('rememberMe', rememberMe.toString(), { expires })
+    } else {
+      Cookies.remove('username')
+      Cookies.remove('password')
+      Cookies.remove('rememberMe')
+    }
     loginAPI<{ token: string }>({
-      username: values.username,
-      password: values.password
+      username: loginUser.username,
+      password: loginUser.password
     }).then((res) => {
       if (!res) return
       if (res.code === 200 && res.data?.token) {
@@ -36,16 +75,7 @@ const LoginForm = ({ state }: PropsType<User>) => {
   }
 
   return (
-    <Form
-      name="normal_login"
-      className="login-form"
-      initialValues={{
-        username: state?.username || 'admin',
-        password: state?.password || 'admin',
-        remember: true
-      }}
-      onFinish={onLogin}
-    >
+    <Form name="normal_login" form={form} className="login-form" onFinish={handleLogin}>
       <Form.Item name="username" rules={[{ required: true, message: '请输入用户名！' }]}>
         <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="用户名" />
       </Form.Item>
@@ -53,7 +83,7 @@ const LoginForm = ({ state }: PropsType<User>) => {
         <Input prefix={<LockOutlined className="site-form-item-icon" />} type="password" placeholder="密码" />
       </Form.Item>
       <Form.Item>
-        <Form.Item name="remember" valuePropName="checked" noStyle>
+        <Form.Item name="rememberMe" valuePropName="checked" noStyle>
           <Checkbox>记住密码</Checkbox>
         </Form.Item>
 

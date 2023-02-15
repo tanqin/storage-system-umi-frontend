@@ -48,6 +48,7 @@ const UserRegister: FC = () => {
   const confirmDirty = false
   let interval: number | undefined
   const [form] = Form.useForm<User>()
+
   useEffect(
     () => () => {
       clearInterval(interval)

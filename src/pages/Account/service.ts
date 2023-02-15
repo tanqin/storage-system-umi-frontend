@@ -1,17 +1,19 @@
 import request from '@/utils/request'
 import { ResultType } from '../User/Register/service'
 
-export interface User {
-  id?: number
+export type User = {
   username: string
-  password?: string
-  nickname?: string
-  age?: number
-  sex?: number
-  phone?: string
-  roleId?: number
-  isValid?: boolean
-}
+} & Partial<{
+  id: number
+  password: string
+  nickname: string
+  age: number
+  sex: number
+  phone: string
+  roleId: number
+  isValid: boolean
+  rememberMe: boolean
+}>
 
 /**
  * 获取用户列表（含分页、搜索）

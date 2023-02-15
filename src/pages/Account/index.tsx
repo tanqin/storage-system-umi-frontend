@@ -124,6 +124,7 @@ export default function Account() {
   // 修改账号状态
   const onChangeValid = (checked: boolean, row: User) => {
     row.isValid = checked
+    type.current = 'edit'
     addOrEditForm.setFieldsValue(row)
     handleAddOrEdit()
   }
@@ -185,8 +186,8 @@ export default function Account() {
           <Switch
             disabled={row.roleId === 0}
             key={row.id}
-            checkedChildren="有效"
-            unCheckedChildren="无效"
+            checkedChildren="启用"
+            unCheckedChildren="停用"
             checked={isValid}
             onChange={(checked) => onChangeValid(checked, row)}
           />
@@ -381,7 +382,7 @@ export default function Account() {
                     />
                   </Form.Item>
                   <Form.Item label="账号状态" name="isValid" valuePropName="checked">
-                    <Switch checkedChildren="有效" unCheckedChildren="无效" />
+                    <Switch checkedChildren="启用" unCheckedChildren="停用" />
                   </Form.Item>
                 </Form>
               </Modal>

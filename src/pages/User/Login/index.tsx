@@ -20,12 +20,12 @@ const LoginForm = ({ state }: PropsType<User>) => {
   // 设置默认用户信息
   const setDefaultLoginUser = () => {
     if (state?.username && state?.password) {
-      console.log('state')
+      // console.log('from state')
       // 从注册页注册成功后跳转至登录页，从 state 中获取账号密码填充
       form.setFieldsValue({ username: state?.username, password: state?.password, rememberMe: true })
     } else {
-      // 其他情况，冲 cookie 中获取账号密码
-      console.log('cookie')
+      // 其他情况，从 cookie 中获取账号密码
+      // console.log('from cookie')
       const username = Cookies.get('username')!
       const password = decrypt(Cookies.get('password')!)
       const rememberMe = Cookies.get('rememberMe')
@@ -77,7 +77,7 @@ const LoginForm = ({ state }: PropsType<User>) => {
   return (
     <Form name="normal_login" form={form} className="login-form" onFinish={handleLogin}>
       <Form.Item name="username" rules={[{ required: true, message: '请输入用户名！' }]}>
-        <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="用户名" />
+        <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="用户名" autoFocus />
       </Form.Item>
       <Form.Item name="password" rules={[{ required: true, message: '请输入密码！' }]}>
         <Input prefix={<LockOutlined className="site-form-item-icon" />} type="password" placeholder="密码" />

@@ -47,8 +47,7 @@ const UserRegister: FC = () => {
   const [popover, setPopover] = useState(false)
   const confirmDirty = false
   let interval: number | undefined
-  const [form] = Form.useForm()
-
+  const [form] = Form.useForm<User>()
   useEffect(
     () => () => {
       clearInterval(interval)
@@ -134,6 +133,7 @@ const UserRegister: FC = () => {
     setPrefix(value)
   }
 
+  // 渲染密码强度校验进度条
   const renderPasswordProgress = () => {
     const value = form.getFieldValue('password')
     const passwordStatus = getPasswordStatus()
@@ -153,16 +153,7 @@ const UserRegister: FC = () => {
   return (
     <div className={styles.main}>
       <h2>注册</h2>
-      <Form
-        form={form}
-        name="UserRegister"
-        initialValues={{
-          password: '123456',
-          confirm: '123456',
-          phone: '13111111111'
-        }}
-        onFinish={onFinish}
-      >
+      <Form form={form} name="UserRegister" onFinish={onFinish}>
         <FormItem
           name="username"
           rules={[
@@ -172,7 +163,7 @@ const UserRegister: FC = () => {
             }
           ]}
         >
-          <Input size="large" placeholder="用户名" />
+          <Input placeholder="用户名" />
         </FormItem>
         <Popover
           getPopupContainer={(node) => {
@@ -205,7 +196,7 @@ const UserRegister: FC = () => {
               }
             ]}
           >
-            <Input size="large" type="password" placeholder="至少6位密码，区分大小写" />
+            <Input type="password" placeholder="至少6位密码，区分大小写" />
           </FormItem>
         </Popover>
         <FormItem
@@ -220,10 +211,13 @@ const UserRegister: FC = () => {
             }
           ]}
         >
-          <Input size="large" type="password" placeholder="确认密码" />
+          <Input type="password" placeholder="确认密码" />
+        </FormItem>
+        <FormItem name="nickname">
+          <Input placeholder="昵称" />
         </FormItem>
         <InputGroup compact>
-          <Select size="large" value={prefix} onChange={changePrefix} style={{ width: '20%' }}>
+          <Select value={prefix} onChange={changePrefix} style={{ width: '20%' }}>
             <Option value="86">+86</Option>
             <Option value="87">+87</Option>
           </Select>
@@ -237,9 +231,10 @@ const UserRegister: FC = () => {
               }
             ]}
           >
-            <Input size="large" placeholder="手机号" />
+            <Input placeholder="手机号" />
           </FormItem>
         </InputGroup>
+
         {/* <Row gutter={8}>
           <Col span={16}>
             <FormItem
@@ -251,12 +246,12 @@ const UserRegister: FC = () => {
                 }
               ]}
             >
-              <Input size="large" placeholder="验证码" />
+              <Input  placeholder="验证码" />
             </FormItem>
           </Col>
           <Col span={8}>
             <Button
-              size="large"
+
               disabled={!!count}
               className={styles.getCaptcha}
               onClick={onGetCaptcha}
@@ -266,7 +261,7 @@ const UserRegister: FC = () => {
           </Col>
         </Row> */}
         <FormItem>
-          <Button size="large" loading={submitting} className={styles.submit} type="primary" htmlType="submit">
+          <Button loading={submitting} className={styles.submit} type="primary" htmlType="submit">
             <span>注册</span>
           </Button>
           <Link className={styles.login} to="/user/login">

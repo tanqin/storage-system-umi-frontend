@@ -1,7 +1,7 @@
 import IconFont from '@/components/IconFont'
 import RoleTag from '@/components/RoleTag'
 import { ExclamationCircleOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Form, Input, InputNumber, message, Modal, Select, Space, Switch, Table, Tooltip } from 'antd'
+import { Button, Form, Input, InputNumber, InputRef, message, Modal, Select, Space, Switch, Table, Tooltip } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { useEffect, useRef, useState } from 'react'
 import { IRoute } from 'umi'
@@ -91,6 +91,7 @@ export default function Menu() {
   }
 
   const type = useRef('add')
+  const nameInputRef = useRef<InputRef>(null)
   const [addOrEditModalShow, setAddOrEditModalShow] = useState(false)
   const [addOrEditForm] = Form.useForm<IRoute>()
 
@@ -101,13 +102,19 @@ export default function Menu() {
       type.current = 'edit'
       addOrEditForm.setFieldsValue(row)
     }
-    setAddOrEditModalShow(true)
+    setAddOrEditModalShow(() => {
+      // 打开模态框输入框自动获得焦点
+      setTimeout(() => {
+        nameInputRef.current?.focus({
+          cursor: 'end'
+        })
+      }, 0)
+      return true
+    })
   }
 
-  // 新增或编辑菜单
-  const handleAddOrEdit = async (menu: IRoute) => {
-    let menuInfo = addOrEditForm.getFieldsValue()
-    if (menu.id) menuInfo = menu
+  // 提交新增或编辑表单
+  const handleAddOrEditFinish = async (menuInfo: IRoute) => {
     menuInfo.roleIds = menuInfo.roleIds.join(',')
     const res = await addOrEditMenuAPI(menuInfo)
     if (res.code === 200) {
@@ -119,6 +126,12 @@ export default function Menu() {
     } else {
       message.error(res.message)
     }
+  }
+
+  // 新增或编辑菜单
+  const handleAddOrEdit = async () => {
+    const menuInfo = await addOrEditForm.validateFields()
+    handleAddOrEditFinish(menuInfo)
   }
 
   // 取消新增或编辑操作
@@ -150,7 +163,7 @@ export default function Menu() {
   // 修改菜单启用状态
   const onChangeValid = (checked: boolean, row: IRoute) => {
     row.isValid = checked
-    handleAddOrEdit(row)
+    handleAddOrEditFinish(row)
   }
 
   // 表格列配置
@@ -320,6 +333,7 @@ export default function Menu() {
                   wrapperCol={{ span: 20 }}
                   autoComplete="off"
                   initialValues={{ level: 1, roleIds: ['0'], is_valid: true }}
+                  onFinish={handleAddOrEditFinish}
                 >
                   <Form.Item name="id" hidden>
                     <Input />
@@ -337,7 +351,7 @@ export default function Menu() {
                       }
                     ]}
                   >
-                    <Input />
+                    <Input ref={nameInputRef} />
                   </Form.Item>
                   <Form.Item label="图标" name="icon">
                     <Select placeholder="请选择图标(可搜索)" optionLabelProp="label" showSearch>
@@ -417,6 +431,8 @@ export default function Menu() {
                   <Form.Item label="菜单状态" name="isValid" valuePropName="checked">
                     <Switch checkedChildren="开启" unCheckedChildren="关闭" />
                   </Form.Item>
+                  {/* 按钮仅用于触发表单的回车提交事件，可用 hidden 属性隐藏 */}
+                  <button type="submit" hidden></button>
                 </Form>
               </Modal>
             </Space>

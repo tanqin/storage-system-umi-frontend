@@ -1,5 +1,5 @@
 import { ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Form, Image, Input, message, Modal, Space, Switch, Table, Tooltip } from 'antd'
+import { Button, Form, Image, Input, InputRef, message, Modal, Space, Switch, Table, Tooltip } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useEffect, useRef, useState } from 'react'
 import { deleteGoodsAPI, addOrEditGoodsAPI, getGoodsListAPI, IGoods } from './service'
@@ -67,21 +67,28 @@ export default function Goods() {
   const [addOrEditForm] = Form.useForm<IGoods>()
   const [isAddOrEditModalOpen, setIsAddOrEditModalOpen] = useState(false)
   const type = useRef('add')
+  const nameInputRef = useRef<InputRef>(null)
 
-  // 新增或编辑物品模态框
+  // 打开新增或编辑物品模态框
   const showAddOrEditModal = (row?: IGoods) => {
     type.current = 'add'
     if (row?.id) {
       type.current = 'edit'
       addOrEditForm.setFieldsValue(row)
     }
-    setIsAddOrEditModalOpen(true)
+    setIsAddOrEditModalOpen(() => {
+      // 打开模态框输入框自动获得焦点
+      setTimeout(() => {
+        nameInputRef.current?.focus({
+          cursor: 'end'
+        })
+      }, 0)
+      return true
+    })
   }
 
-  // 新增或编辑物品信息
-  const handleAddOrEdit = async () => {
-    // 校验表单
-    const goodsInfo = await addOrEditForm.validateFields()
+  // 提交新增或编辑表单
+  const handleAddOrEditFinish = async (goodsInfo: IGoods) => {
     const res = await addOrEditGoodsAPI(goodsInfo)
     if (res.code === 200) {
       message.success(res.message, 2)
@@ -91,6 +98,13 @@ export default function Goods() {
     } else {
       message.error(res.message)
     }
+  }
+
+  // 新增或编辑物品信息
+  const handleAddOrEdit = async () => {
+    // 校验表单
+    const goodsInfo = await addOrEditForm.validateFields()
+    handleAddOrEditFinish(goodsInfo)
   }
 
   // 取消添加或编辑
@@ -115,8 +129,7 @@ export default function Goods() {
   // 修改物品状态
   const onChangeValid = (checked: boolean, row: IGoods) => {
     row.isValid = checked
-    addOrEditForm.setFieldsValue(row)
-    handleAddOrEdit()
+    handleAddOrEditFinish(row)
   }
 
   // 表格列配置
@@ -259,12 +272,13 @@ export default function Goods() {
                   wrapperCol={{ span: 20 }}
                   autoComplete="off"
                   initialValues={{ isValid: true }}
+                  onFinish={handleAddOrEditFinish}
                 >
                   <Form.Item name="id" hidden>
                     <Input />
                   </Form.Item>
                   <Form.Item label="物品名称" name="name" rules={[{ required: true, message: '请输入物品名称!' }]}>
-                    <Input />
+                    <Input ref={nameInputRef} />
                   </Form.Item>
                   <Form.Item label="备注" name="remark">
                     <Input.TextArea showCount maxLength={128} style={{ height: 120, resize: 'none' }} />
@@ -272,6 +286,8 @@ export default function Goods() {
                   <Form.Item label="物品状态" name="isValid" valuePropName="checked">
                     <Switch checkedChildren="显示" unCheckedChildren="隐藏" />
                   </Form.Item>
+                  {/* 按钮仅用于触发表单的回车提交事件，可用 hidden 属性隐藏 */}
+                  <button type="submit" hidden></button>
                 </Form>
               </Modal>
             </Space>

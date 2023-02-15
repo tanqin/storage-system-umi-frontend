@@ -1,5 +1,19 @@
 import { ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Form, Input, InputNumber, message, Modal, Radio, Select, Space, Switch, Table, Tag } from 'antd'
+import {
+  Button,
+  Form,
+  Input,
+  InputNumber,
+  InputRef,
+  message,
+  Modal,
+  Radio,
+  Select,
+  Space,
+  Switch,
+  Table,
+  Tag
+} from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useEffect, useRef, useState } from 'react'
 import { registerAPI } from '../User/Register/service'
@@ -77,20 +91,28 @@ export default function Account() {
   const [addOrEditForm] = Form.useForm<User>()
   const [isAddOrEditModalOpen, setIsAddOrEditModalOpen] = useState(false)
   const type = useRef('add')
+  const nameInputRef = useRef<InputRef>(null)
 
-  // 新增或编辑用户模态框
+  // 打开新增或编辑用户模态框
   const showAddOrEditModal = (row?: User) => {
     type.current = 'add'
     if (row) {
       type.current = 'edit'
       addOrEditForm.setFieldsValue(row)
     }
-    setIsAddOrEditModalOpen(true)
+    setIsAddOrEditModalOpen(() => {
+      // 打开模态框输入框自动获得焦点
+      setTimeout(() => {
+        nameInputRef.current?.focus({
+          cursor: 'end'
+        })
+      }, 0)
+      return true
+    })
   }
 
-  // 新增或编辑用户信息
-  const handleAddOrEdit = async () => {
-    let userInfo = addOrEditForm.getFieldsValue()
+  // 提交新增或编辑表单
+  const handleAddOrEditFinish = async (userInfo: User) => {
     const res = await (type.current === 'add' ? registerAPI(userInfo) : editUserAPI(userInfo))
     if (res.code === 200) {
       message.success(res.message, 2)
@@ -100,6 +122,13 @@ export default function Account() {
     } else {
       message.error(res.message)
     }
+  }
+
+  // 新增或编辑用户信息
+  const handleAddOrEdit = async () => {
+    // 校验表单
+    const userInfo = await addOrEditForm.validateFields()
+    handleAddOrEditFinish(userInfo)
   }
 
   // 取消新增或编辑用户信息
@@ -125,8 +154,7 @@ export default function Account() {
   const onChangeValid = (checked: boolean, row: User) => {
     row.isValid = checked
     type.current = 'edit'
-    addOrEditForm.setFieldsValue(row)
-    handleAddOrEdit()
+    handleAddOrEditFinish(row)
   }
 
   // 表格列配置
@@ -283,6 +311,7 @@ export default function Account() {
                   wrapperCol={{ span: 20 }}
                   autoComplete="off"
                   initialValues={{ sex: 2, roleId: 2, isValid: true }}
+                  onFinish={handleAddOrEditFinish}
                 >
                   <Form.Item name="id" hidden>
                     <Input />
@@ -300,13 +329,13 @@ export default function Account() {
                       }
                     ]}
                   >
-                    <Input />
+                    <Input ref={nameInputRef} />
                   </Form.Item>
                   <Form.Item
                     label="密码"
                     name="password"
                     rules={[
-                      { required: true, message: '请输入密码!' },
+                      { required: type.current === 'add', message: '请输入密码!' },
                       {
                         type: 'string',
                         min: 6,
@@ -384,6 +413,8 @@ export default function Account() {
                   <Form.Item label="账号状态" name="isValid" valuePropName="checked">
                     <Switch checkedChildren="启用" unCheckedChildren="停用" />
                   </Form.Item>
+                  {/* 按钮仅用于触发表单的回车提交事件，可用 hidden 属性隐藏 */}
+                  <button type="submit" hidden></button>
                 </Form>
               </Modal>
             </Space>

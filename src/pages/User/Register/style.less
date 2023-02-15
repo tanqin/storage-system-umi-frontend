@@ -1,60 +1,69 @@
 @import '~antd/es/style/themes/default.less';
 
-.main {
-  width: 368px;
-  margin: 100px auto;
+.register-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(rgba(111, 111, 111, 0.9), rgba(0, 21, 41, 0.8)), url('https://api.vvhan.com/api/bing');
 
-  h2 {
-    margin-bottom: 20px;
-    text-align: center;
-  }
+  :global {
+    .main {
+      width: 368px;
 
-  .password {
-    margin-bottom: 24px;
-    :global {
-      .ant-form-item-explain {
-        display: none;
+      h2 {
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .password {
+        margin-bottom: 24px;
+        :global {
+          .ant-form-item-explain {
+            display: none;
+          }
+        }
+      }
+
+      .getCaptcha {
+        display: block;
+        width: 100%;
+      }
+
+      .submit {
+        width: 50%;
+      }
+
+      .login {
+        float: right;
+        line-height: @btn-height-lg;
       }
     }
-  }
 
-  .getCaptcha {
-    display: block;
-    width: 100%;
-  }
+    .success,
+    .warning,
+    .error {
+      transition: color 0.3s;
+    }
 
-  .submit {
-    width: 50%;
-  }
+    .success {
+      color: @success-color;
+    }
 
-  .login {
-    float: right;
-    line-height: @btn-height-lg;
-  }
-}
+    .warning {
+      color: @warning-color;
+    }
 
-.success,
-.warning,
-.error {
-  transition: color 0.3s;
-}
+    .error {
+      color: @error-color;
+    }
 
-.success {
-  color: @success-color;
-}
-
-.warning {
-  color: @warning-color;
-}
-
-.error {
-  color: @error-color;
-}
-
-.progress-pass > .progress {
-  :global {
-    .ant-progress-bg {
-      background-color: @warning-color;
+    .progress-pass > .progress {
+      :global {
+        .ant-progress-bg {
+          background-color: @warning-color;
+        }
+      }
     }
   }
 }

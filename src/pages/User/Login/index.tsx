@@ -108,6 +108,7 @@ export default function Login({ location }: IRouteComponentProps) {
   // debugger
   return (
     <div className={styles['login-container']}>
+      <h1>仓库管理系统</h1>
       <div id="form-login">
         <LoginForm state={location.state as User} />
       </div>

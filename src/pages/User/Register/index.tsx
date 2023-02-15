@@ -14,17 +14,17 @@ const InputGroup = Input.Group
 
 const passwordStatusMap = {
   ok: (
-    <div className={styles.success}>
+    <div className="success">
       <span>强度：强</span>
     </div>
   ),
   pass: (
-    <div className={styles.warning}>
+    <div className="warning">
       <span>强度：中</span>
     </div>
   ),
   poor: (
-    <div className={styles.error}>
+    <div className="error">
       <span>强度：太短</span>
     </div>
   )
@@ -152,91 +152,92 @@ const UserRegister: FC = () => {
   }
 
   return (
-    <div className={styles.main}>
-      <h2>注册</h2>
-      <Form form={form} name="UserRegister" onFinish={onFinish}>
-        <FormItem
-          name="username"
-          rules={[
-            {
-              required: true,
-              message: '请输入用户名!'
-            }
-          ]}
-        >
-          <Input placeholder="用户名" />
-        </FormItem>
-        <Popover
-          getPopupContainer={(node) => {
-            if (node && node.parentNode) {
-              return node.parentNode as HTMLElement
-            }
-            return node
-          }}
-          content={
-            visible && (
-              <div style={{ padding: '4px 0' }}>
-                {passwordStatusMap[getPasswordStatus()]}
-                {renderPasswordProgress()}
-                <div style={{ marginTop: 10 }}>
-                  <span>请至少输入 6 个字符的密码。</span>
+    <div className={styles['register-container']}>
+      <div className="main">
+        <h2>注册</h2>
+        <Form form={form} name="UserRegister" onFinish={onFinish}>
+          <FormItem
+            name="username"
+            rules={[
+              {
+                required: true,
+                message: '请输入用户名!'
+              }
+            ]}
+          >
+            <Input placeholder="用户名" autoFocus />
+          </FormItem>
+          <Popover
+            getPopupContainer={(node) => {
+              if (node && node.parentNode) {
+                return node.parentNode as HTMLElement
+              }
+              return node
+            }}
+            content={
+              visible && (
+                <div style={{ padding: '4px 0' }}>
+                  {passwordStatusMap[getPasswordStatus()]}
+                  {renderPasswordProgress()}
+                  <div style={{ marginTop: 10 }}>
+                    <span>请至少输入 6 个字符的密码。</span>
+                  </div>
                 </div>
-              </div>
-            )
-          }
-          overlayStyle={{ width: 240 }}
-          placement="right"
-          open={visible}
-        >
-          <FormItem
-            name="password"
-            className={form.getFieldValue('password') && form.getFieldValue('password').length > 0 && styles.password}
-            rules={[
-              {
-                validator: checkPassword
-              }
-            ]}
-          >
-            <Input type="password" placeholder="至少6位密码，区分大小写" />
-          </FormItem>
-        </Popover>
-        <FormItem
-          name="confirm"
-          rules={[
-            {
-              required: true,
-              message: '确认密码'
-            },
-            {
-              validator: checkConfirm
+              )
             }
-          ]}
-        >
-          <Input type="password" placeholder="确认密码" />
-        </FormItem>
-        <FormItem name="nickname">
-          <Input placeholder="昵称" />
-        </FormItem>
-        <InputGroup compact>
-          <Select value={prefix} onChange={changePrefix} style={{ width: '20%' }}>
-            <Option value="86">+86</Option>
-            <Option value="87">+87</Option>
-          </Select>
+            overlayStyle={{ width: 240 }}
+            placement="right"
+            open={visible}
+          >
+            <FormItem
+              name="password"
+              className={form.getFieldValue('password') && form.getFieldValue('password').length > 0 && styles.password}
+              rules={[
+                {
+                  validator: checkPassword
+                }
+              ]}
+            >
+              <Input type="password" placeholder="至少6位密码，区分大小写" />
+            </FormItem>
+          </Popover>
           <FormItem
-            style={{ width: '80%' }}
-            name="phone"
+            name="confirm"
             rules={[
               {
-                pattern: /^1[3-9]\d{9}$/,
-                message: '手机号格式错误!'
+                required: true,
+                message: '确认密码'
+              },
+              {
+                validator: checkConfirm
               }
             ]}
           >
-            <Input placeholder="手机号" />
+            <Input type="password" placeholder="确认密码" />
           </FormItem>
-        </InputGroup>
+          <FormItem name="nickname">
+            <Input placeholder="昵称" />
+          </FormItem>
+          <InputGroup compact>
+            <Select value={prefix} onChange={changePrefix} style={{ width: '20%' }}>
+              <Option value="86">+86</Option>
+              <Option value="87">+87</Option>
+            </Select>
+            <FormItem
+              style={{ width: '80%' }}
+              name="phone"
+              rules={[
+                {
+                  pattern: /^1[3-9]\d{9}$/,
+                  message: '手机号格式错误!'
+                }
+              ]}
+            >
+              <Input placeholder="手机号" />
+            </FormItem>
+          </InputGroup>
 
-        {/* <Row gutter={8}>
+          {/* <Row gutter={8}>
           <Col span={16}>
             <FormItem
               name="captcha"
@@ -261,15 +262,16 @@ const UserRegister: FC = () => {
             </Button>
           </Col>
         </Row> */}
-        <FormItem>
-          <Button loading={submitting} className={styles.submit} type="primary" htmlType="submit">
-            <span>注册</span>
-          </Button>
-          <Link className={styles.login} to="/user/login">
-            <span>已有账户，去登陆？</span>
-          </Link>
-        </FormItem>
-      </Form>
+          <FormItem>
+            <Button loading={submitting} className="submit" type="primary" htmlType="submit">
+              <span>注册</span>
+            </Button>
+            <Link className="login" to="/user/login">
+              <span>已有账户，去登陆？</span>
+            </Link>
+          </FormItem>
+        </Form>
+      </div>
     </div>
   )
 }

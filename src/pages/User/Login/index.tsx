@@ -1,14 +1,21 @@
 import styles from './index.less'
 import { Form, Input, Button, Checkbox, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
-import { loginAPI, LoginParams } from './service'
+import { loginAPI } from './service'
 import { IRouteComponentProps, Link, Location } from 'umi'
 import { setToken } from '@/utils/auth'
 import { ReactNode } from 'react'
 import { User } from '@/pages/Account/service'
+
+export interface PropsType<T = undefined> {
+  location?: Location
+  children?: ReactNode
+  state?: T
+}
+
 const LoginForm = ({ state }: PropsType<User>) => {
   // debugger
-  const onLogin = (values: LoginParams) => {
+  const onLogin = (values: User) => {
     loginAPI<{ token: string }>({
       username: values.username,
       password: values.password
@@ -65,12 +72,6 @@ const LoginForm = ({ state }: PropsType<User>) => {
       </Form.Item>
     </Form>
   )
-}
-
-export interface PropsType<T = undefined> {
-  location?: Location
-  children?: ReactNode
-  state?: T
 }
 
 export default function Login({ location }: IRouteComponentProps) {

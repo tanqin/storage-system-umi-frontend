@@ -5,12 +5,12 @@ export interface User {
   id?: number
   username: string
   password?: string
-  nickname: string
-  age: number
-  sex: number | null | undefined
-  phone: string
-  roleId: number
-  isValid: boolean
+  nickname?: string
+  age?: number
+  sex?: number
+  phone?: string
+  roleId?: number
+  isValid?: boolean
 }
 
 /**

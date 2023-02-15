@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from 'react'
-import { Form, Input, Button, Checkbox, message } from 'antd'
+import { Form, Input, Button, Checkbox, message, Card } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { IRouteComponentProps, Link, Location } from 'umi'
 import Cookies from 'js-cookie'
@@ -108,10 +108,13 @@ export default function Login({ location }: IRouteComponentProps) {
   // debugger
   return (
     <div className={styles['login-container']}>
-      <h1>仓库管理系统</h1>
-      <div id="form-login">
+      <Card
+        id="form-login"
+        title="仓库管理系统"
+        headStyle={{ textAlign: 'center', fontWeight: 'bold', fontSize: '28px' }}
+      >
         <LoginForm state={location.state as User} />
-      </div>
+      </Card>
     </div>
   )
 }

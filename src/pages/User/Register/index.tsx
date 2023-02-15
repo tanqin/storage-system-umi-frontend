@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 import { useState, useEffect } from 'react'
-import { Form, Button, Input, Popover, Progress, Select, message } from 'antd'
+import { Form, Button, Input, Popover, Progress, Select, message, Card } from 'antd'
 import type { Store } from 'antd/es/form/interface'
 import { Link, useRequest, history } from 'umi'
 import type { ResultType } from './service'
@@ -153,8 +153,7 @@ const UserRegister: FC = () => {
 
   return (
     <div className={styles['register-container']}>
-      <div className="main">
-        <h2>注册</h2>
+      <Card className="main" title="注册" headStyle={{ textAlign: 'center', fontWeight: 'bold', fontSize: '28px' }}>
         <Form form={form} name="UserRegister" onFinish={onFinish}>
           <FormItem
             name="username"
@@ -271,7 +270,7 @@ const UserRegister: FC = () => {
             </Link>
           </FormItem>
         </Form>
-      </div>
+      </Card>
     </div>
   )
 }

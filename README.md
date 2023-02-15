@@ -44,3 +44,10 @@ A：根据 issues 中提供的方案，尝试 `ctrl + shift + p -> 输入 server
 
 9. ❓动态路由需要用户登录后向后端接口获取，而路由的渲染时机在一进入系统就执行了，导致用户登陆后无法得到后端提供的路由数据，登陆后还需要手动刷新一下页面向后端获取路由数据。
 A：根据 issues [能不能在运行之后再动态从服务器获取路由进行更新？](https://github.com/umijs/umi/issues/2511) 提供的方案，将 oldRender 存为全局变量，登陆后再次调用 oldRender 实现路由的追加更新。尝试后发现确实可以实现路由追加操作，但是会提示警告 `You cannot change <Router history>`，点击对应的路由并没有跳转，也就是说手动调用 oldRender 并不能修改 Router。最后只能用不那么友好的方式解决了，登陆后不使用 `history.replace({pathname: '/'})` 改用 `window.location.href = '/'` 进行跳转，主要是利用了 `window.location.href` 跳转会刷新页面的特点。
+
+## 功能待办
+
+1. 对接之前写好的简易版文件管理系统（Vue3 + Express），实现用户头像、物品图片上传
+2. 添加邮箱字段，「忘记密码」支持邮箱找回
+3. 首页 Echarts 图表
+4. 报表管理

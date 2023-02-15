@@ -56,10 +56,12 @@ const LoginForm = ({ state }: PropsType<User>) => {
       </Form.Item>
 
       <Form.Item>
-        <Button type="primary" htmlType="submit" className="login-form-button">
+        <Button type="primary" htmlType="submit" className="login-button">
           登录
         </Button>
-        <Link to="/user/register">马上注册！</Link>
+        <Link to="/user/register" className="register">
+          没有账户，去注册？
+        </Link>
       </Form.Item>
     </Form>
   )

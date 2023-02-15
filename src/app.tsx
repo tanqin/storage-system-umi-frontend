@@ -43,7 +43,12 @@ export const layout = {
 // 权限路由
 let authRoutes: Array<any> = []
 
-// 拼接菜单
+// 改造组件路径
+function remakeComponentPath(componentPath: string): string {
+  return componentPath.replace('@/', './')
+}
+
+// 解析菜单(将图片、组件路径变为 JSX.Element)
 function parseRoutes(authRoutes: any[]) {
   if (authRoutes) {
     return authRoutes.map((item: any) => ({
@@ -51,7 +56,7 @@ function parseRoutes(authRoutes: any[]) {
       //  Ant Design 的图标库 ==> https://www.iconfont.cn/collections/detail?cid=9402
       // 图标批量入库：进入 https://www.iconfont.cn/collections/detail?cid=9402 => F12 => document.querySelectorAll('.icon-gouwuche1').forEach(i=>setTimeout(()=>{i.click()}))
       icon: <IconFont type={item.icon} />,
-      component: require(`${item.component}`).default
+      component: require(`${remakeComponentPath(item.component)}`).default
     }))
   }
 }

@@ -46,12 +46,15 @@ export default function Menu() {
     menuList.forEach((item) => {
       item.roleIds = item.roleIds.split(',')
     })
-    const queryString = pageQuery.params?.queryString || ''
-    // 以下三种情况都应该显示「首页」菜单路由
+
+    const queryString = pageQuery.params?.queryString as string
+    // 以下情况都应该显示「首页」菜单路由
     if (
-      indexMenu.name.includes(queryString) ||
-      indexMenu.path.includes(queryString) ||
-      indexMenu.component.includes(queryString)
+      (!queryString ||
+        indexMenu.name.includes(queryString) ||
+        indexMenu.path.includes(queryString) ||
+        indexMenu.component.includes(queryString)) &&
+      (!pageQuery.params?.roleIds || indexMenu.roleIds.join() === pageQuery.params?.roleIds)
     ) {
       // 「首页」菜单路由由前端维护，没有从后端获取，所以需要添加到菜单列表用于展示
       menuList.unshift(indexMenu)
@@ -374,12 +377,17 @@ export default function Menu() {
                     // label="路由地址"
                     label={
                       <>
-                        路由地址
-                        <span hidden={type.current === 'add'} style={{ marginLeft: '2px' }}>
-                          <Tooltip destroyTooltipOnHide title="谨慎更改！" color="orange" placement="topRight">
+                        <span className="mr4">
+                          <Tooltip
+                            destroyTooltipOnHide
+                            title={`/index 和 index 含义相同，都表示 ${window.location.host}/index`}
+                            color="orange"
+                            placement="top"
+                          >
                             <InfoCircleOutlined className="ml5" style={{ color: 'orange' }} />
                           </Tooltip>
                         </span>
+                        路由地址
                       </>
                     }
                     name="path"
@@ -391,16 +399,22 @@ export default function Menu() {
                     // label="组件路径"
                     label={
                       <>
-                        组件路径
-                        <span hidden={type.current === 'add'} style={{ marginLeft: '2px' }}>
-                          <Tooltip title="谨慎更改！" color="orange" placement="topRight">
+                        <span className="mr4">
+                          <Tooltip title=" @/ 和 ./ 含义相同, 都表示 src/ 目录" color="orange" placement="top">
                             <InfoCircleOutlined className="ml5" style={{ color: 'orange' }} />
                           </Tooltip>
                         </span>
+                        组件路径
                       </>
                     }
-                    rules={[{ required: true, message: '请输入组件路径!' }]}
                     name="component"
+                    rules={[
+                      { required: true, message: '请输入组件路径!' },
+                      {
+                        pattern: /^(@|\.)\/.*$/,
+                        message: '请检查组件路径格式，确保以 @/ 或 ./ 开头!'
+                      }
+                    ]}
                   >
                     <Input />
                   </Form.Item>

@@ -8,9 +8,9 @@ export type User = {
   password: string
   nickname: string
   age: number
-  sex: number
+  sex: 0 | 1 | 2
   phone: string
-  roleId: number
+  roleId: 0 | 1 | 2
   isValid: boolean
   rememberMe: boolean
 }>

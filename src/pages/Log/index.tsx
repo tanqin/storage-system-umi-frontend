@@ -14,6 +14,15 @@ const initialPageQuery = {
   params: {}
 }
 
+enum TypeEnum {
+  出库,
+  入库
+}
+enum TypeColorEnum {
+  red,
+  green
+}
+
 export default function Log() {
   const [logList, setLogList] = useState<ILog[]>([])
   const [total, setTotal] = useState(0)
@@ -94,9 +103,7 @@ export default function Log() {
     {
       title: '操作类型',
       dataIndex: 'type',
-      render: (type) => (
-        <Tag color={type === 0 ? 'red' : type ? 'green' : ''}>{type === 0 ? '出库' : type ? '入库' : ''}</Tag>
-      ),
+      render: (type) => <Tag color={TypeColorEnum[type]}>{TypeEnum[type]}</Tag>,
       align: 'center'
     },
     {

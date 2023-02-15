@@ -23,14 +23,28 @@ import { useSelector } from 'umi'
 
 type PageQuery = {
   queryString?: string
-  sex?: number
-  roleId?: number
+  sex?: 0 | 1 | 2
+  roleId?: 0 | 1 | 2
 }
 
 const initialPageQuery = {
   pageNum: 1,
   pageSize: 10,
   params: {}
+}
+
+// 性别枚举
+enum sexEnum {
+  女,
+  男,
+  未知
+}
+
+// 性别对应颜色枚举
+enum sexColorEnum {
+  pink,
+  blue,
+  grey
 }
 
 export default function Account() {
@@ -188,8 +202,9 @@ export default function Account() {
       title: '性别',
       dataIndex: 'sex',
       render: (sex, row) => (
-        <Tag color={sex === 0 ? 'pink' : sex === 1 ? 'blue' : 'grey'} key={row.id}>
-          {sex === 0 ? '女' : sex === 1 ? '男' : '未知'}
+        <Tag color={sexColorEnum[sex]} key={row.id}>
+          {/* {sex === 0 ? '女' : sex === 1 ? '男' : '未知'} */}
+          {sexEnum[sex]}
         </Tag>
       ),
       align: 'center'

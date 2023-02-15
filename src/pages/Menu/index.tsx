@@ -19,6 +19,19 @@ const initialPageQuery = {
   params: {}
 }
 
+// 「首页」菜单路由
+const indexMenu = {
+  id: -1,
+  pid: 0,
+  name: '首页',
+  path: '/index',
+  icon: 'icon-home',
+  component: './pages',
+  level: 0,
+  roleIds: ['0', '1', '2'],
+  isValid: true
+}
+
 export default function Menu() {
   const [searchForm] = Form.useForm()
   const [menuList, setMenuList] = useState<IRoute[]>([])
@@ -29,20 +42,20 @@ export default function Menu() {
   // 获取菜单列表
   const getMenuList = async () => {
     const { data: menuList = [], total } = await getMenuListAPI<SearchParams>(pageQuery)
+    // 字符串切割为数组，用于展示「授权角色」
     menuList.forEach((item) => {
       item.roleIds = item.roleIds.split(',')
     })
-    menuList.unshift({
-      id: -1,
-      pid: 0,
-      name: '首页',
-      path: '/index',
-      icon: 'icon-home',
-      component: './pages',
-      level: 0,
-      roleIds: ['0', '1', '2'],
-      isValid: true
-    })
+    const queryString = pageQuery.params?.queryString || ''
+    // 以下三种情况都应该显示「首页」菜单路由
+    if (
+      indexMenu.name.includes(queryString) ||
+      indexMenu.path.includes(queryString) ||
+      indexMenu.component.includes(queryString)
+    ) {
+      // 「首页」菜单路由由前端维护，没有从后端获取，所以需要添加到菜单列表用于展示
+      menuList.unshift(indexMenu)
+    }
     setMenuList(JSON.parse(JSON.stringify(menuList)))
     setTotal(total || 0)
   }
@@ -396,7 +409,7 @@ export default function Menu() {
                         },
                         {
                           value: '2',
-                          label: '普通'
+                          label: '普通用户'
                         }
                       ]}
                     />

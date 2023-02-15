@@ -374,13 +374,12 @@ export default function Menu() {
                     </Select>
                   </Form.Item>
                   <Form.Item
-                    // label="路由地址"
                     label={
                       <>
                         <span className="mr4">
                           <Tooltip
                             destroyTooltipOnHide
-                            title={`/index 和 index 含义相同，都表示 ${window.location.host}/index`}
+                            title={`如：/index 表示 ${window.location.host}/index`}
                             color="orange"
                             placement="top"
                           >
@@ -391,12 +390,17 @@ export default function Menu() {
                       </>
                     }
                     name="path"
-                    rules={[{ required: true, message: '请输入路由路径!' }]}
+                    rules={[
+                      { required: true, message: '请输入路由地址!' },
+                      {
+                        pattern: /^\/.*$/,
+                        message: '请检查路由地址格式，确保以 / 开头!'
+                      }
+                    ]}
                   >
                     <Input />
                   </Form.Item>
                   <Form.Item
-                    // label="组件路径"
                     label={
                       <>
                         <span className="mr4">

@@ -33,21 +33,27 @@ export type CodeMessageKey = keyof typeof codeMessage
  * 异常处理程序
  */
 const errorHandler = (error: ResponseError) => {
+  // 服务器未启动的情况，手动将 code 设置为 503
   if (!error.response) {
-    const code = 503
-    notification.error({
-      message: `${code} : ${error.request.url}`,
-      description: '请求错误: ' + codeMessage[code]
-    })
+    // 仅在开发环境下显示错误通知，主要是为了方便开发环境查看错误原因
+    if (process.env.NODE_ENV === 'development') {
+      const code = 503
+      notification.error({
+        message: `请求 url: ${error.request.url}`,
+        description: (
+          <>
+            <div>状态码：${code}</div> <div>${codeMessage[code]}</div>
+          </>
+        )
+      })
+    }
     return
   }
   const { status } = error.response
   const code = status as CodeMessageKey
   if (code === 403) {
     history.push('/403')
-  } else if (code <= 504 && code >= 500) {
-    history.push('/500')
-  } else if (code >= 404 && code < 422) {
+  } else if (code === 404) {
     history.push('/404')
   }
   return Promise.reject(error)
@@ -69,7 +75,7 @@ request.interceptors.request.use((url, options) => {
     'Content-Type': 'application/json;charset=utf-8'
   }
 
-  const baseurl = process.env.baseUrl + url
+  const baseurl = (process.env.baseUrl as string) + url
   const optionsHeaders = options.headers as { [key: string]: string }
 
   if (token) {
@@ -111,10 +117,17 @@ request.interceptors.response.use(async (response, options) => {
         }
       })
     } else if (code !== 200) {
-      notification.error({
-        message: `${code || status} : ${response.url}`,
-        description: '请求错误: ' + errorText
-      })
+      // 仅在开发环境下显示错误通知，主要是为了方便开发环境查看错误原因
+      if (process.env.NODE_ENV === 'development') {
+        notification.error({
+          message: `请求 url: ${response.url}`,
+          description: (
+            <>
+              <div> 状态码：{code || status}</div> <div>{errorText}</div>
+            </>
+          )
+        })
+      }
     }
   }
   return response

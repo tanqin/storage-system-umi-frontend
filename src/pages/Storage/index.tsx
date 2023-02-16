@@ -57,9 +57,13 @@ export default function Storage() {
       okText: '确认',
       cancelText: '取消',
       onOk: async () => {
-        const res = await deleteStorageAPI(id)
-        message[res.code === 200 ? 'success' : 'error'](res.message)
-        getStorageList()
+        try {
+          const res = await deleteStorageAPI(id)
+          message[res.code === 200 ? 'success' : 'error'](res.message)
+          getStorageList()
+        } catch (err: any) {
+          message.error(err.data.message || '删除失败！')
+        }
       }
     })
   }
@@ -156,12 +160,12 @@ export default function Storage() {
       align: 'center'
     },
     {
-      title: '包含种类(单位: 种)',
+      title: '种类数量',
       dataIndex: 'kindCount',
       align: 'center'
     },
     {
-      title: '包含物品(单位: 件)',
+      title: '物品数量',
       dataIndex: 'goodsCount',
       align: 'center'
     },

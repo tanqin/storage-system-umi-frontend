@@ -235,7 +235,6 @@ const UserRegister: FC = () => {
               <Input placeholder="手机号" />
             </FormItem>
           </InputGroup>
-
           {/* <Row gutter={8}>
           <Col span={16}>
             <FormItem

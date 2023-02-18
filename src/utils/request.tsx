@@ -17,7 +17,7 @@ export const codeMessage = {
   400: '发出的请求有错误，服务器没有进行新建或修改数据的操作。',
   401: '用户没有权限（令牌、用户名、密码错误）。',
   403: '用户得到授权，但是访问是被禁止的。',
-  404: '发出的请求针对的是不存在的记录，服务器没有进行操作。',
+  404: '客户端所请求的资源未被服务器找到或不可用。',
   406: '请求的格式不可得。',
   410: '请求的资源被永久删除，且不会再得到的。',
   422: '当创建一个对象时，发生一个验证错误。',
@@ -33,28 +33,13 @@ export type CodeMessageKey = keyof typeof codeMessage
  * 异常处理程序
  */
 const errorHandler = (error: ResponseError) => {
-  const { response } = error
-  const code = response.status as CodeMessageKey
-  if (response && code) {
-    // if (code === 404) {
-    //   history.push('/404')
-    // }
-    const errorText = codeMessage[code] || response.statusText
-    const { status, url } = response
-    notification.error({
-      message: `请求 url: ${url}`,
-      description: (
-        <>
-          <div> 状态码：{status}</div> <div>{errorText}</div>
-        </>
-      )
-    })
-  } else if (!response) {
+  if (!error.response) {
     notification.error({
       message: '网络异常',
       description: '网络异常，无法连接服务器'
     })
   }
+  return Promise.reject(error)
 }
 
 // 配置请求时的默认参数。配置文档：https://github.com/umijs/umi-request/blob/master/README_zh-CN.md

@@ -1,4 +1,4 @@
-import { history } from 'umi'
+import { history, IRoute } from 'umi'
 import IconFont from './components/IconFont'
 import { getMenuAuthAPI } from './pages/Menu/service'
 import { getToken, removeToken } from './utils/auth'
@@ -41,7 +41,7 @@ export const layout = {
 }
 
 // 权限路由
-let authRoutes: Array<any> = []
+let authRoutes: IRoute[] = []
 
 // 改造组件路径
 function remakeComponentPath(componentPath: string): string {
@@ -49,9 +49,9 @@ function remakeComponentPath(componentPath: string): string {
 }
 
 // 解析菜单(将图片、组件路径变为 JSX.Element)
-function parseRoutes(authRoutes: any[]) {
-  if (authRoutes) {
-    return authRoutes.map((item: any) => ({
+function parseRoutes(authRoutes: IRoute[]) {
+  if (authRoutes.length) {
+    return authRoutes.map((item: IRoute) => ({
       ...item,
       //  Ant Design 的图标库 ==> https://www.iconfont.cn/collections/detail?cid=9402
       // 图标批量入库：进入 https://www.iconfont.cn/collections/detail?cid=9402 => F12 => document.querySelectorAll('.icon-gouwuche1').forEach(i=>setTimeout(()=>{i.click()}))
@@ -61,9 +61,9 @@ function parseRoutes(authRoutes: any[]) {
   }
 }
 // 修改路由，如：增加权限路由
-export function patchRoutes({ routes }: { routes: Array<any> }) {
+export function patchRoutes({ routes }: { routes: IRoute[] }) {
   parseRoutes(authRoutes)?.forEach((item) => {
-    routes[0].routes[1].routes.splice(-2, 0, item)
+    routes[0].routes![1].routes!.splice(-2, 0, item)
   })
 }
 
@@ -72,7 +72,7 @@ export function render(oldRender: any) {
   if (getToken()) {
     getMenuAuthAPI()
       .then((res) => {
-        authRoutes = (res?.data || []) as Array<any>
+        authRoutes = (res?.data || []) as IRoute[]
         oldRender()
       })
       .catch((err) => {

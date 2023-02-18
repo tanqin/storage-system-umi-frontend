@@ -1,5 +1,5 @@
 /**
- * request 网络请求工具
+ * request 网络请求工具。参考：https://blog.csdn.net/fsfsdgsdg/article/details/125245983
  * 更详细的api文档: https://bigfish.alipay.com/doc/api#request
  */
 import { extend } from 'umi-request'
@@ -33,101 +33,86 @@ export type CodeMessageKey = keyof typeof codeMessage
  * 异常处理程序
  */
 const errorHandler = (error: ResponseError) => {
-  // 服务器未启动的情况，手动将 code 设置为 503
-  if (!error.response) {
-    // 仅在开发环境下显示错误通知，主要是为了方便开发环境查看错误原因
-    if (process.env.NODE_ENV === 'development') {
-      const code = 503
-      notification.error({
-        message: `请求 url: ${error.request.url}`,
-        description: (
-          <>
-            <div>状态码：${code}</div> <div>${codeMessage[code]}</div>
-          </>
-        )
-      })
-    }
-    return
+  const { response } = error
+  const code = response.status as CodeMessageKey
+  if (response && code) {
+    // if (code === 404) {
+    //   history.push('/404')
+    // }
+    const errorText = codeMessage[code] || response.statusText
+    const { status, url } = response
+    notification.error({
+      message: `请求 url: ${url}`,
+      description: (
+        <>
+          <div> 状态码：{status}</div> <div>{errorText}</div>
+        </>
+      )
+    })
+  } else if (!response) {
+    notification.error({
+      message: '网络异常',
+      description: '网络异常，无法连接服务器'
+    })
   }
-  const { status } = error.response
-  const code = status as CodeMessageKey
-  if (code === 403) {
-    history.push('/403')
-  } else if (code === 404) {
-    history.push('/404')
-  }
-  return Promise.reject(error)
 }
 
-/**
- * 配置请求时的默认参数
- */
+// 配置请求时的默认参数。配置文档：https://github.com/umijs/umi-request/blob/master/README_zh-CN.md
 const request = extend({
-  errorHandler,
+  prefix: process.env.baseUrl, // 统一的请求前缀
   timeout: 60000,
-  credentials: 'include' // 默认请求是否带上 cookie
+  credentials: 'include', // 默认请求是否带上 cookie
+  headers: {
+    'Content-Type': 'application/json;charset=utf-8',
+    Authorization: getToken() || ''
+  },
+  errorHandler
 })
 
 //请求拦截
 request.interceptors.request.use((url, options) => {
-  const token = getToken()
-  const headers = {
-    'Content-Type': 'application/json;charset=utf-8'
-  }
-
-  const baseurl = (process.env.baseUrl as string) + url
-  const optionsHeaders = options.headers as { [key: string]: string }
-
-  if (token) {
-    optionsHeaders.Authorization = token
-    return {
-      url: baseurl,
-      options: options,
-      headers: { ...headers }
-    }
-  }
-  delete optionsHeaders.Authorization
   return {
-    url: baseurl,
-    options,
-    headers: { ...headers }
+    options: {
+      ...options,
+      interceptors: true
+    }
   }
 })
 
 //响应拦截
-request.interceptors.response.use(async (response, options) => {
+request.interceptors.response.use(async (response) => {
   const status = response.status as CodeMessageKey
-  if (response.url.indexOf('personnel/exportById') !== -1) {
-    // const res = await response.clone().text()
-    // const blob = new Blob([res],{type: 'application/arrayBuffer'});
-  } else {
-    const res: ResultType = await response.clone().json()
-    const { code, message } = res
-    const errorText = codeMessage[code || status] || message
-    // debugger
-    if (code === 401 && status === 401) {
-      Modal.confirm({
-        title: '系统提示',
-        content: '登录状态已过期，您可以继续留在该页面，或者重新登录？',
-        okText: '重新登录',
-        cancelText: '取消',
-        onOk: () => {
-          removeToken()
-          history.push('/user/login')
-        }
-      })
-    } else if (code !== 200) {
-      // 仅在开发环境下显示错误通知，主要是为了方便开发环境查看错误原因
-      if (process.env.NODE_ENV === 'development') {
-        notification.error({
-          message: `请求 url: ${response.url}`,
-          description: (
-            <>
-              <div> 状态码：{code || status}</div> <div>{errorText}</div>
-            </>
-          )
+  const res: ResultType = await response.clone().json()
+  const errorText = codeMessage[status] || res.message
+  // debugger
+  if (status !== 200) {
+    switch (status) {
+      case 401:
+        Modal.confirm({
+          title: '系统提示',
+          content: '登录状态已过期，您可以继续留在该页面，或者重新登录？',
+          okText: '重新登录',
+          cancelText: '取消',
+          onOk: () => {
+            removeToken()
+            history.push('/user/login')
+          }
         })
-      }
+        break
+
+      default:
+        // 仅在开发环境下显示错误通知，主要是为了方便开发环境查看错误原因
+        if (process.env.NODE_ENV === 'development') {
+          notification.error({
+            message: `请求 url: ${response.url}`,
+            description: (
+              <>
+                <div> 状态码：{status}</div> <div>{errorText}</div>
+              </>
+            )
+          })
+        }
+        break
     }
   }
   return response

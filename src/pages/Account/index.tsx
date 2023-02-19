@@ -221,6 +221,16 @@ export default function Account() {
       align: 'center'
     },
     {
+      title: '创建时间',
+      dataIndex: 'createTime',
+      align: 'center'
+    },
+    {
+      title: '最后更新',
+      dataIndex: 'updateTime',
+      align: 'center'
+    },
+    {
       title: '账号状态',
       dataIndex: 'isValid',
       align: 'center',

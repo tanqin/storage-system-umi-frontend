@@ -1,28 +1,8 @@
-import {
-  ExclamationCircleOutlined,
-  MinusCircleOutlined,
-  MinusOutlined,
-  PlusCircleOutlined,
-  PlusOutlined,
-  SearchOutlined
-} from '@ant-design/icons'
-import {
-  Button,
-  Form,
-  Input,
-  InputRef,
-  message,
-  Modal,
-  Popconfirm,
-  Select,
-  Space,
-  Switch,
-  Table,
-  Tag,
-  Tooltip
-} from 'antd'
+import { ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons'
+import { Button, Form, Input, InputRef, message, Modal, Select, Space, Table, Tag } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useEffect, useRef, useState } from 'react'
+import QuantityControl from './components/QuantityControl'
 import { deleteInventoryAPI, addOrEditInventoryAPI, getInventoryListAPI, IInventory } from './service'
 
 type SearchParams = {
@@ -174,11 +154,6 @@ export default function Inventory() {
     handleAddOrEdit()
   }
 
-  // 修改库存数量
-  const handleChangeQuantity = (type: 'add' | 'reduce') => {
-    console.log(type)
-  }
-
   // 表格列配置
   const columns: ColumnsType<IInventory> = [
     {
@@ -201,35 +176,9 @@ export default function Inventory() {
       dataIndex: 'quantity',
       render: (quantity, row) => (
         <Space>
-          <Tooltip title="减少库存">
-            <Popconfirm
-              placement="top"
-              icon=""
-              title={
-                <>
-                  <h3>减少 (当前库存：{quantity})</h3> <Input />
-                </>
-              }
-              onConfirm={() => handleChangeQuantity('reduce')}
-            >
-              <Button type="primary" shape="circle" icon={<MinusOutlined />} size="small" />
-            </Popconfirm>
-          </Tooltip>
-          <span>{quantity}</span>
-          <Tooltip title="增加库存">
-            <Popconfirm
-              placement="top"
-              icon=""
-              title={
-                <>
-                  <h3>增加 (当前库存：{quantity})</h3> <Input />
-                </>
-              }
-              onConfirm={() => handleChangeQuantity('add')}
-            >
-              <Button type="primary" shape="circle" icon={<PlusOutlined />} size="small" />
-            </Popconfirm>
-          </Tooltip>
+          <QuantityControl type="reduce" onChange={handleAddOrEditFinish} row={row} />
+          <span style={{ display: 'inline-block', minWidth: '50px' }}>{quantity}</span>
+          <QuantityControl type="add" onChange={handleAddOrEditFinish} row={row} />
         </Space>
       ),
       align: 'center'
@@ -240,12 +189,12 @@ export default function Inventory() {
       align: 'center'
     },
     {
-      title: '成本价',
+      title: '成本价(元)',
       dataIndex: 'costPrice',
       align: 'center'
     },
     {
-      title: '销售价',
+      title: '销售价(元)',
       dataIndex: 'sellingPrice',
       align: 'center'
     },

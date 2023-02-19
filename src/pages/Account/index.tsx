@@ -275,7 +275,7 @@ export default function Account() {
           <Form.Item name="sex">
             <Select
               placeholder="请选择性别"
-              style={{ width: 120 }}
+              className="w120"
               allowClear
               options={[
                 {
@@ -296,7 +296,7 @@ export default function Account() {
           <Form.Item name="roleId" hidden={roleId !== 0}>
             <Select
               placeholder="请选择角色"
-              style={{ width: 120 }}
+              className="w120"
               allowClear
               options={[
                 {

@@ -156,11 +156,6 @@ export default function Kind() {
       align: 'center'
     },
     {
-      title: '所属仓库',
-      dataIndex: 'storageId',
-      align: 'center'
-    },
-    {
       title: '种类状态',
       dataIndex: 'isValid',
       align: 'center',

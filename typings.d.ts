@@ -12,3 +12,8 @@ declare interface IPageQuery<T = {}> {
   pageSize?: number
   params?: T
 }
+
+declare type SelectType = {
+  value: number
+  label: string
+}

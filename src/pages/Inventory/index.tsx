@@ -1,14 +1,16 @@
 import { ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Form, Image, Input, InputRef, message, Modal, Select, Space, Table, Tag } from 'antd'
+import { Button, Form, Image, Input, InputNumber, InputRef, message, Modal, Select, Space, Table, Tag } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { useEffect, useRef, useState } from 'react'
+import { getKindAllListAPI, IKind } from '../Kind/service'
 import QuantityControl from './components/QuantityControl'
 import { deleteInventoryAPI, addOrEditInventoryAPI, getInventoryListAPI, IInventory } from './service'
 
-type SearchParams = {
-  queryString?: string
-  status?: number
-}
+type SearchParams = Partial<{
+  queryString: string
+  status: number
+  kindId: number
+}>
 
 const initialPageQuery = {
   pageNum: 1,
@@ -32,6 +34,7 @@ enum ItemStatusColorEnum {
 
 export default function Inventory() {
   const [inventoryList, setInventoryList] = useState<IInventory[]>([])
+  const [kindAllList, setKindAllList] = useState<SelectType[]>([])
   const [total, setTotal] = useState(0)
   const [searchForm] = Form.useForm()
 
@@ -44,18 +47,25 @@ export default function Inventory() {
     setTotal(total || 0)
   }
 
+  // 获取种类列表
+  const getKindAllList = async () => {
+    const { data } = await getKindAllListAPI()
+    setKindAllList(data || [])
+  }
+
   useEffect(() => {
     getInventoryList()
   }, [pageQuery])
 
+  useEffect(() => {
+    getKindAllList()
+  }, [])
+
   // 设置查询参数
-  const handleSearch = (values: SearchParams) => {
+  const handleSearch = (params: SearchParams) => {
     setPageQuery({
       ...pageQuery,
-      params: {
-        queryString: values.queryString,
-        status: values.status
-      }
+      params
     })
   }
 
@@ -86,7 +96,7 @@ export default function Inventory() {
   }
 
   const type = useRef('add')
-  const itemNameInputRef = useRef<InputRef>(null)
+  const goodsNameInputRef = useRef<InputRef>(null)
   const [addOrEditForm] = Form.useForm<IInventory>()
   const [isAddOrEditModalOpen, setIsAddOrEditModalOpen] = useState(false)
 
@@ -100,7 +110,7 @@ export default function Inventory() {
     setIsAddOrEditModalOpen(() => {
       // 打开模态框输入框自动获得焦点
       setTimeout(() => {
-        itemNameInputRef.current?.focus({
+        goodsNameInputRef.current?.focus({
           cursor: 'end'
         })
       }, 0)
@@ -147,18 +157,16 @@ export default function Inventory() {
     })
   }
 
-  // 修改库存状态
-  const onChangeValid = (checked: boolean, row: IInventory) => {
-    // row.isValid = checked
-    addOrEditForm.setFieldsValue(row)
-    handleAddOrEdit()
-  }
-
   // 表格列配置
   const columns: ColumnsType<IInventory> = [
     {
+      title: '种类',
+      dataIndex: 'kindName',
+      align: 'center'
+    },
+    {
       title: '商品编号',
-      dataIndex: 'itemNumber',
+      dataIndex: 'goodsCode',
       align: 'center'
     },
     {
@@ -175,10 +183,10 @@ export default function Inventory() {
     },
     {
       title: '商品名称',
-      dataIndex: 'itemName',
-      render: (itemName, row) => (
+      dataIndex: 'goodsName',
+      render: (goodsName, row) => (
         <Button type="link" key={row.id} onClick={() => showAddOrEditModal(row)}>
-          {itemName}
+          {goodsName}
         </Button>
       ),
       align: 'center'
@@ -201,13 +209,15 @@ export default function Inventory() {
       align: 'center'
     },
     {
-      title: '成本价(元)',
+      title: '成本价',
       dataIndex: 'costPrice',
+      render: (costPrice) => <span>¥ {costPrice}</span>,
       align: 'center'
     },
     {
-      title: '销售价(元)',
+      title: '销售价',
       dataIndex: 'sellingPrice',
+      render: (sellingPrice) => <span>¥ {sellingPrice}</span>,
       align: 'center'
     },
     {
@@ -254,7 +264,7 @@ export default function Inventory() {
           <Form.Item name="status">
             <Select
               placeholder="状态"
-              style={{ width: 120 }}
+              className="w120"
               allowClear
               options={[
                 {
@@ -271,6 +281,9 @@ export default function Inventory() {
                 }
               ]}
             />
+          </Form.Item>
+          <Form.Item name="kindId">
+            <Select placeholder="种类" className="w120" allowClear options={kindAllList} />
           </Form.Item>
           <Form.Item>
             <Space>
@@ -299,11 +312,11 @@ export default function Inventory() {
                   <Form.Item name="id" hidden>
                     <Input />
                   </Form.Item>
-                  <Form.Item label="商品编号" name="itemNumber" hidden={type.current === 'add'}>
+                  <Form.Item label="商品编号" name="goodsCode" hidden={type.current === 'add'}>
                     <Input disabled />
                   </Form.Item>
-                  <Form.Item label="商品名称" name="itemName" rules={[{ required: true, message: '请输入商品名称!' }]}>
-                    <Input ref={itemNameInputRef} />
+                  <Form.Item label="商品名称" name="goodsName" rules={[{ required: true, message: '请输入商品名称!' }]}>
+                    <Input ref={goodsNameInputRef} />
                   </Form.Item>
                   <Form.Item label="库存数量" name="quantity">
                     <Input />
@@ -312,17 +325,17 @@ export default function Inventory() {
                     <Input />
                   </Form.Item>
                   <Form.Item label="成本价" name="costPrice">
-                    <Input />
+                    <InputNumber addonBefore="¥" precision={2} className="w120" />
                   </Form.Item>
                   <Form.Item label="销售价" name="sellingPrice">
-                    <Input />
+                    <InputNumber addonBefore="¥" precision={2} className="w120" />
                   </Form.Item>
                   <Form.Item label="存放位置" name="location">
                     <Input />
                   </Form.Item>
                   <Form.Item label="状态" name="status">
                     <Select
-                      style={{ width: 120 }}
+                      className="w120"
                       allowClear
                       options={[
                         {
